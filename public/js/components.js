@@ -65,7 +65,7 @@
         <div>
           <h4>Stay in Touch</h4>
           <p class="mb-2">Get special offers, recipes, and baking tips.</p>
-          <form class="footer-subscribe" onsubmit="event.preventDefault(); this.querySelector('input').value=''; alert('Thanks for subscribing!');">
+          <form class="footer-subscribe" id="footer-subscribe">
             <input type="email" placeholder="Your email" required />
             <button type="submit">Join</button>
           </form>
@@ -83,6 +83,16 @@
   </footer>`;
 
   function init() {
+    // Google Analytics
+    var gaId = 'G-XXXXXXXXXX';
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+    document.head.appendChild(gaScript);
+    var gaConfig = document.createElement('script');
+    gaConfig.textContent = 'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","' + gaId + '");';
+    document.head.appendChild(gaConfig);
+
     // Inject nav at top of body
     document.body.insertAdjacentHTML('afterbegin', NAV_HTML);
 
@@ -136,6 +146,27 @@
         link.style.color = 'var(--color-accent)';
       }
     });
+
+    // Newsletter subscribe
+    var subForm = document.getElementById('footer-subscribe');
+    if (subForm) {
+      subForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var input = this.querySelector('input');
+        var email = input.value;
+        fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        }).then(function(r) { return r.json(); })
+        .then(function(data) {
+          input.value = '';
+          alert(data.message || 'Thanks for subscribing!');
+        }).catch(function() {
+          alert('Could not subscribe. Please try again.');
+        });
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

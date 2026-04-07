@@ -10,6 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Halant:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=WindSong&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/modern.css" />
+  <meta property="og:title" content="Individually Wrapped Cakesters — Nina's Homemade Delights" />
+  <meta property="og:description" content="Individually wrapped miniature cakes crafted with the same care as our full-size originals. The perfect ready-to-share gift for any occasion." />
+  <meta property="og:image" content="https://nhd-static-assets.s3.amazonaws.com/cdn/6477946868cf8693cfa8ace3/647816c0da2709493f00fb56_cakester.jpg" />
+  <meta property="og:url" content="https://www.ninashomemadedelights.com/product/individually-wrapped-cakesters.html" />
+  <meta property="og:type" content="product" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Individually Wrapped Cakesters","image":"https://nhd-static-assets.s3.amazonaws.com/cdn/6477946868cf8693cfa8ace3/647816c0da2709493f00fb56_cakester.jpg","description":"Individually wrapped miniature cakes crafted with the same care as our full-size originals. The perfect ready-to-share gift for any occasion.","offers":{"@type":"Offer","price":"70.00","priceCurrency":"USD","availability":"https://schema.org/InStock"}}</script>
 </head>
 <body>
   <!-- nav injected by components.js -->
@@ -33,6 +39,11 @@
             <option value="Lemon">Lemon</option>
             <option value="Red Velvet">Red Velvet</option>
           </select>
+        </div>
+
+        <div class="product-form-group">
+          <label for="qty">Quantity</label>
+          <input type="number" id="qty" value="1" min="1" max="10" />
         </div>
 
         <button class="btn btn-primary" onclick="addToCart()">Add to Cart</button>

@@ -9,6 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Halant:wght@400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;1,6..12,400&family=WindSong:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/modern.css" />
+  <meta property="og:title" content="Checkout — Nina's Homemade Delights" />
+  <meta property="og:description" content="Complete your order for premium handmade cakes and desserts from Nina's Homemade Delights." />
+  <meta property="og:image" content="https://nhd-static-assets.s3.amazonaws.com/cdn/64779458477d1aa4405357ad/64ac646aa0159eddda1a5f5e_NinaSergeyWedding_0088%201.png" />
+  <meta property="og:url" content="https://www.ninashomemadedelights.com/checkout.html" />
+  <meta property="og:type" content="website" />
 </head>
 <body>
 
@@ -24,7 +29,8 @@
       <div id="checkout-success" style="display:none">
         <div class="icon" style="font-size:3rem;color:#2e7d32;margin-bottom:1rem;">&#10003;</div>
         <h1>Thank You!</h1>
-        <p>Your order has been placed successfully. You'll receive a confirmation email shortly.</p>
+        <p>Your order has been placed successfully.</p>
+        <div id="order-details" style="max-width:500px;margin:1.5rem auto;text-align:left;"></div>
         <a href="/" class="btn btn-primary mt-3">Back to Home</a>
       </div>
 
@@ -47,6 +53,25 @@
       document.getElementById('checkout-default').style.display = 'none';
       document.getElementById('checkout-success').style.display = 'block';
       NHDCart.clear();
+      var sessionId = params.get('session_id');
+      if (sessionId) {
+        fetch('/api/order/' + sessionId)
+          .then(function(r) { return r.json(); })
+          .then(function(order) {
+            if (order.items) {
+              var html = '<h3 style="margin-bottom:0.75rem;">Order Summary</h3>';
+              order.items.forEach(function(item) {
+                html += '<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(0,0,0,0.06);">';
+                html += '<span>' + item.name + ' x' + item.quantity + '</span>';
+                html += '<strong>$' + item.total.toFixed(2) + '</strong></div>';
+              });
+              html += '<div style="display:flex;justify-content:space-between;padding:0.75rem 0;font-size:1.1rem;font-weight:700;">';
+              html += '<span>Total</span><span>$' + order.total.toFixed(2) + '</span></div>';
+              if (order.email) html += '<p style="margin-top:1rem;color:#6b6b6b;font-size:0.9rem;">Confirmation sent to ' + order.email + '</p>';
+              document.getElementById('order-details').innerHTML = html;
+            }
+          }).catch(function() {});
+      }
       return;
     }
 

@@ -4,6 +4,9 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const helmet = require('helmet');
 const compression = require('compression');
 const path = require('path');
+const nodemailer = require('nodemailer');
+const rateLimit = require('express-rate-limit');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +22,9 @@ app.use(helmet({
         "'self'",
         "'unsafe-inline'",
         "https://js.stripe.com",
-        "https://cdn.jsdelivr.net"
+        "https://cdn.jsdelivr.net",
+        "https://www.googletagmanager.com",
+        "https://www.google-analytics.com"
       ],
       styleSrc: [
         "'self'",
@@ -36,17 +41,18 @@ app.use(helmet({
         "'self'",
         "https://nhd-static-assets.s3.amazonaws.com",
         "https://nhd-static-assets.s3.us-east-1.amazonaws.com",
-        "data:"
+        "data:",
+        "https://www.googletagmanager.com"
       ],
       frameSrc: ["https://js.stripe.com"],
-      connectSrc: ["'self'", "https://api.stripe.com"],
+      connectSrc: ["'self'", "https://api.stripe.com", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://analytics.google.com"],
       scriptSrcAttr: ["'unsafe-inline'"],
     },
   },
 }));
 
 // Stripe webhook needs raw body — must come BEFORE express.json()
-app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -69,7 +75,25 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) =
       console.log('Payment successful for session:', session.id);
       console.log('Customer email:', session.customer_details?.email);
       console.log('Amount total:', session.amount_total / 100, session.currency?.toUpperCase());
-      // TODO: Send confirmation email, update order database, etc.
+      // Send order notification email to Nina
+      if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        try {
+          const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+          const itemsList = lineItems.data.map(li => `${li.description} x${li.quantity} — $${(li.amount_total / 100).toFixed(2)}`).join('\n');
+          const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com', port: 587, secure: false,
+            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+          });
+          await transporter.sendMail({
+            from: `"NHD Orders" <${process.env.SMTP_USER}>`,
+            to: 'nina.malyutina@gmail.com',
+            subject: `New order! $${(session.amount_total / 100).toFixed(2)} from ${session.customer_details?.name || 'Customer'}`,
+            text: `New order received!\n\nCustomer: ${session.customer_details?.name || 'N/A'}\nEmail: ${session.customer_details?.email || 'N/A'}\nTotal: $${(session.amount_total / 100).toFixed(2)} ${session.currency?.toUpperCase()}\n\nItems:\n${itemsList}\n\nShipping to:\n${session.shipping_details?.name || ''}\n${session.shipping_details?.address?.line1 || ''}\n${session.shipping_details?.address?.city || ''}, ${session.shipping_details?.address?.state || ''} ${session.shipping_details?.address?.postal_code || ''}`
+          });
+        } catch (emailErr) {
+          console.error('Order notification email failed:', emailErr.message);
+        }
+      }
       break;
     }
     case 'checkout.session.expired': {
@@ -85,6 +109,62 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) =
 
 // JSON body parser for all other routes
 app.use(express.json());
+
+// Rate limiter for contact form
+const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many submissions. Please try again later.' }
+});
+
+// Contact form
+app.post('/api/contact', contactLimiter, async (req, res) => {
+  try {
+    const { name, email, phone, company, message } = req.body;
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Name, email, and message are required.' });
+    }
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+    });
+    await transporter.sendMail({
+      from: `"NHD Website" <${process.env.SMTP_USER}>`,
+      to: 'nina.malyutina@gmail.com',
+      replyTo: email,
+      subject: `New inquiry from ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nCompany: ${company || 'N/A'}\n\nMessage:\n${message}`
+    });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Contact form error:', err.message);
+    res.status(500).json({ error: 'Failed to send message. Please try again.' });
+  }
+});
+
+// Newsletter subscribe
+app.post('/api/subscribe', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Valid email required.' });
+    }
+    const file = '/opt/nhd/subscribers.json';
+    let subs = [];
+    try { subs = JSON.parse(fs.readFileSync(file, 'utf8')); } catch {}
+    if (subs.includes(email.toLowerCase())) {
+      return res.json({ success: true, message: 'Already subscribed!' });
+    }
+    subs.push(email.toLowerCase());
+    fs.writeFileSync(file, JSON.stringify(subs, null, 2));
+    res.json({ success: true, message: 'Thanks for subscribing!' });
+  } catch (err) {
+    console.error('Subscribe error:', err.message);
+    res.status(500).json({ error: 'Failed to subscribe.' });
+  }
+});
 
 // Serve static site files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -140,9 +220,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      allow_promotion_codes: true,
       line_items,
       mode: 'payment',
-      success_url: `${DOMAIN}/checkout.html?success=true`,
+      success_url: `${DOMAIN}/checkout.html?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${DOMAIN}/checkout.html?canceled=true`,
       shipping_address_collection: {
         allowed_countries: ['US'],
@@ -164,6 +245,27 @@ app.get('/api/products', async (req, res) => {
   } catch (err) {
     console.error('Stripe error:', err.message);
     res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
+
+// Order details for success page
+app.get('/api/order/:sessionId', async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId, {
+      expand: ['line_items']
+    });
+    res.json({
+      name: session.customer_details?.name,
+      email: session.customer_details?.email,
+      total: session.amount_total / 100,
+      items: session.line_items?.data.map(li => ({
+        name: li.description,
+        quantity: li.quantity,
+        total: li.amount_total / 100
+      }))
+    });
+  } catch (err) {
+    res.status(404).json({ error: 'Order not found' });
   }
 });
 
