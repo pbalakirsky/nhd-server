@@ -116,7 +116,7 @@
       { maxLbs: 999,rates: [38.99, 52.49, 67.99] }
     ];
 
-    var LBS_PER_ITEM = 3;
+    var DEFAULT_WEIGHT = 4; // fallback if item has no weight set
 
     function getShippingZone(zip) {
       if (!zip || zip.length < 5) return null;
@@ -158,8 +158,10 @@
       // Build item rows with quantity controls and remove button
       var html = '';
       totalItems = 0;
+      totalWeight = 0;
       items.forEach(function(item, i) {
         totalItems += item.quantity;
+        totalWeight += (item.weight || DEFAULT_WEIGHT) * item.quantity;
         html += '<div style="display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.06);align-items:center;">';
         html += '<img src="' + item.image + '" alt="' + item.name + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" />';
         html += '<div style="flex:1;text-align:left;">';
@@ -182,7 +184,6 @@
       itemsDiv.innerHTML = html;
 
       subtotal = NHDCart.getTotal();
-      totalWeight = totalItems * LBS_PER_ITEM;
 
       // Preserve zip input value
       var currentZip = savedZip;
@@ -190,7 +191,7 @@
       actionsDiv.innerHTML = ''
         + '<div style="text-align:left;margin:1.5rem 0;padding:1.5rem;background:#faf7f5;border-radius:12px;">'
         + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.25rem;">Estimate Shipping</p>'
-        + '<p style="font-size:0.85rem;color:#6b6b6b;margin-bottom:0.75rem;">Estimated weight: ' + totalWeight + ' lbs (' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' x 3 lbs) &mdash; shipped via UPS Ground from Ellicott City, MD</p>'
+        + '<p style="font-size:0.85rem;color:#6b6b6b;margin-bottom:0.75rem;">Estimated weight: ' + totalWeight + ' lbs (' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ', includes packaging) &mdash; shipped via UPS Ground from Ellicott City, MD</p>'
         + '<div style="display:flex;gap:0.5rem;align-items:center;">'
         + '<input type="text" id="shipping-zip" placeholder="Enter zip code" maxlength="5" pattern="[0-9]*" inputmode="numeric" value="' + currentZip + '" style="flex:1;padding:0.6rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;" />'
         + '<button class="btn btn-outline" onclick="estimateShipping()" style="white-space:nowrap;">Calculate</button>'

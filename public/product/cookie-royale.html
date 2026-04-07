@@ -53,12 +53,16 @@
     });
     const qtyEl = document.getElementById('qty');
     const qty = qtyEl ? parseInt(qtyEl.value) || 1 : 1;
+    const sizeVal = document.getElementById('size').value;
+    const pounds = parseInt(sizeVal) || 1;
+    const weight = pounds + 1;
     NHDCart.addItem({
       name: 'Cookie Royale',
       price: 30.00,
       image: 'https://nhd-static-assets.s3.amazonaws.com/cdn/6477946868cf8693cfa8ace3/651c979b20b0eee0d8dd1058_cookies.PNG',
       quantity: qty,
-      options: options
+      options: options,
+      weight: weight
     });
   }
   </script>
