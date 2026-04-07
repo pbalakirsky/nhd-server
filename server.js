@@ -108,10 +108,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
       }
     }
 
-    // Validate shipping cost
+    // Validate shipping cost (must be 0 or between $10-$70, matching rate table)
     const shippingCost = typeof shipping === 'number' && shipping >= 0 ? shipping : 0;
-    const VALID_SHIPPING = [0, 12.99, 18.99, 24.99];
-    if (!VALID_SHIPPING.includes(shippingCost)) {
+    if (shippingCost > 70) {
       return res.status(400).json({ error: 'Invalid shipping rate' });
     }
 

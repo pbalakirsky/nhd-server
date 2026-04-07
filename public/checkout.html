@@ -14,19 +14,13 @@
 
   <div id="checkout-content" class="checkout-message" style="padding:4rem 0;">
     <div class="container">
-      <!-- Default: show cart review -->
       <div id="checkout-default">
         <h1>Your Order</h1>
         <p>Review your items below, then proceed to secure checkout.</p>
-        <div id="checkout-items" style="max-width:600px;margin:2rem auto;">
-          <!-- JS will populate this -->
-        </div>
-        <div id="checkout-actions" style="max-width:600px;margin:0 auto;text-align:center;">
-          <!-- JS will populate total + button -->
-        </div>
+        <div id="checkout-items" style="max-width:600px;margin:2rem auto;"></div>
+        <div id="checkout-actions" style="max-width:600px;margin:0 auto;text-align:center;"></div>
       </div>
 
-      <!-- Success state (hidden by default) -->
       <div id="checkout-success" style="display:none">
         <div class="icon" style="font-size:3rem;color:#2e7d32;margin-bottom:1rem;">&#10003;</div>
         <h1>Thank You!</h1>
@@ -34,7 +28,6 @@
         <a href="/" class="btn btn-primary mt-3">Back to Home</a>
       </div>
 
-      <!-- Cancel state (hidden by default) -->
       <div id="checkout-cancel" style="display:none">
         <div class="icon" style="font-size:3rem;color:#c0392b;margin-bottom:1rem;">&#10007;</div>
         <h1>Order Canceled</h1>
@@ -63,14 +56,23 @@
       return;
     }
 
-    // Shipping zone lookup based on zip code prefix (first 3 digits)
-    // Origin: Baltimore, MD area (zip 212xx)
-    // Zones: local (MD/DC/VA/DE), regional (East Coast), national (rest of US)
+    // ---- Shipping calculator ----
+    // Origin: Ellicott City, MD 21042
+    // Weight: 3 lbs per item
+    // Rates: approximate UPS Ground from 21042 by zone and total weight
+
+    // Zone lookup by 3-digit zip prefix
+    // Local = MD, DC, VA, DE, WV (UPS zones 2-3)
+    // Regional = PA, NJ, NY, CT, MA, NH, VT, ME, RI, NC, SC, GA, OH, WV (zones 3-5)
+    // National = everything else (zones 6-8)
     var LOCAL_PREFIXES = [
-      '206','207','208','209','210','211','212','213','214','215','216','217','218','219','220','221',
-      '222','223','224','225','226','227','228','229','230','231','232','233','234','235','236','237',
-      '238','239','240','241','242','243','244','245','246','247','248','249','250','251','252','253',
-      '254','255','256','257','258','259','260','261','197','198','199','200','201','202','203','204','205'
+      '197','198','199',
+      '200','201','202','203','204','205','206','207','208','209',
+      '210','211','212','213','214','215','216','217','218','219',
+      '220','221','222','223','224','225','226','227','228','229',
+      '230','231','232','233','234','235','236','237','238','239',
+      '240','241','242','243','244','245','246','247',
+      '248','249','250','251','252','253','254','255','256','257','258','259','260','261','262','263','264','265','266','267','268'
     ];
     var REGIONAL_PREFIXES = [
       '010','011','012','013','014','015','016','017','018','019',
@@ -81,7 +83,6 @@
       '060','061','062','063','064','065','066','067','068','069',
       '070','071','072','073','074','075','076','077','078','079',
       '080','081','082','083','084','085','086','087','088','089',
-      '090','091','092','093','094','095','096','097','098','099',
       '100','101','102','103','104','105','106','107','108','109',
       '110','111','112','113','114','115','116','117','118','119',
       '120','121','122','123','124','125','126','127','128','129',
@@ -92,41 +93,72 @@
       '170','171','172','173','174','175','176','177','178','179',
       '180','181','182','183','184','185','186','187','188','189',
       '190','191','192','193','194','195','196',
-      '262','263','264','265','266','267','268','269',
-      '270','271','272','273','274','275','276','277','278','279',
+      '269','270','271','272','273','274','275','276','277','278','279',
       '280','281','282','283','284','285','286','287','288','289',
       '290','291','292','293','294','295','296','297','298','299',
       '300','301','302','303','304','305','306','307','308','309',
-      '310','311','312','313','314','315','316','317','318','319'
+      '310','311','312','313','314','315','316','317','318','319',
+      '430','431','432','433','434','435','436','437','438','439',
+      '440','441','442','443','444','445','446','447','448','449',
+      '450','451','452','453','454','455','456','457','458','459'
     ];
 
-    var SHIPPING_RATES = {
-      local: 12.99,
-      regional: 18.99,
-      national: 24.99,
-      pickup: 0
-    };
+    // UPS Ground rate table from 21042 (approximate, in dollars)
+    // Rows = weight tiers, Columns = [local, regional, national]
+    var RATE_TABLE = [
+      { maxLbs: 3,  rates: [10.99, 15.49, 21.99] },
+      { maxLbs: 6,  rates: [12.99, 18.49, 25.99] },
+      { maxLbs: 10, rates: [14.99, 21.49, 29.99] },
+      { maxLbs: 15, rates: [17.99, 25.49, 34.99] },
+      { maxLbs: 20, rates: [20.99, 29.49, 39.99] },
+      { maxLbs: 30, rates: [24.99, 34.49, 46.99] },
+      { maxLbs: 50, rates: [30.99, 42.49, 55.99] },
+      { maxLbs: 999,rates: [38.99, 52.49, 67.99] }
+    ];
+
+    var LBS_PER_ITEM = 3;
 
     function getShippingZone(zip) {
       if (!zip || zip.length < 5) return null;
       var prefix = zip.substring(0, 3);
-      if (LOCAL_PREFIXES.indexOf(prefix) !== -1) return 'local';
-      if (REGIONAL_PREFIXES.indexOf(prefix) !== -1) return 'regional';
-      return 'national';
+      if (LOCAL_PREFIXES.indexOf(prefix) !== -1) return 0; // local
+      if (REGIONAL_PREFIXES.indexOf(prefix) !== -1) return 1; // regional
+      return 2; // national
+    }
+
+    var ZONE_NAMES = ['Local (MD/DC/VA/DE/WV)', 'Regional (East Coast)', 'National'];
+
+    function calcShipping(zoneIndex, totalLbs) {
+      for (var i = 0; i < RATE_TABLE.length; i++) {
+        if (totalLbs <= RATE_TABLE[i].maxLbs) {
+          return RATE_TABLE[i].rates[zoneIndex];
+        }
+      }
+      return RATE_TABLE[RATE_TABLE.length - 1].rates[zoneIndex];
     }
 
     var shippingCost = 0;
     var subtotal = 0;
+    var totalItems = 0;
 
     function updateTotals() {
       var totalEl = document.getElementById('order-total');
       var shippingEl = document.getElementById('shipping-amount');
       var grandTotal = subtotal + shippingCost;
       if (totalEl) totalEl.textContent = '$' + grandTotal.toFixed(2);
-      if (shippingEl) shippingEl.textContent = shippingCost === 0 && document.getElementById('shipping-zip') && document.getElementById('shipping-zip').value ? 'FREE (Pickup)' : (shippingCost > 0 ? '$' + shippingCost.toFixed(2) : '—');
+      var pickup = document.getElementById('local-pickup');
+      if (shippingEl) {
+        if (pickup && pickup.checked) {
+          shippingEl.textContent = 'FREE (Pickup)';
+        } else if (shippingCost > 0) {
+          shippingEl.textContent = '$' + shippingCost.toFixed(2);
+        } else {
+          shippingEl.innerHTML = '&mdash;';
+        }
+      }
     }
 
-    // Default: show cart items for review
+    // Build cart items display
     var items = NHDCart.getItems();
     var itemsDiv = document.getElementById('checkout-items');
     var actionsDiv = document.getElementById('checkout-actions');
@@ -138,7 +170,9 @@
     }
 
     var html = '';
-    items.forEach(function(item, i) {
+    totalItems = 0;
+    items.forEach(function(item) {
+      totalItems += item.quantity;
       html += '<div style="display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.06);align-items:center;">';
       html += '<img src="' + item.image + '" alt="' + item.name + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" />';
       html += '<div style="flex:1;text-align:left;">';
@@ -156,16 +190,18 @@
     itemsDiv.innerHTML = html;
 
     subtotal = NHDCart.getTotal();
+    var totalWeight = totalItems * LBS_PER_ITEM;
 
     actionsDiv.innerHTML = ''
       + '<div style="text-align:left;margin:1.5rem 0;padding:1.5rem;background:#faf7f5;border-radius:12px;">'
-      + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;">Estimate Shipping</p>'
+      + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.25rem;">Estimate Shipping</p>'
+      + '<p style="font-size:0.85rem;color:#6b6b6b;margin-bottom:0.75rem;">Estimated weight: ' + totalWeight + ' lbs (' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' x 3 lbs) &mdash; shipped via UPS Ground from Ellicott City, MD</p>'
       + '<div style="display:flex;gap:0.5rem;align-items:center;">'
       + '<input type="text" id="shipping-zip" placeholder="Enter zip code" maxlength="5" pattern="[0-9]*" inputmode="numeric" style="flex:1;padding:0.6rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;" />'
       + '<button class="btn btn-outline" onclick="estimateShipping()" style="white-space:nowrap;">Calculate</button>'
       + '</div>'
       + '<label style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;font-size:0.9rem;color:#6b6b6b;cursor:pointer;">'
-      + '<input type="checkbox" id="local-pickup" onchange="togglePickup()" /> I\'ll pick up my order (Baltimore area)'
+      + '<input type="checkbox" id="local-pickup" onchange="togglePickup()" /> I\'ll pick up my order (Ellicott City, MD area)'
       + '</label>'
       + '<p id="shipping-zone-msg" style="font-size:0.85rem;color:#6b6b6b;margin-top:0.5rem;"></p>'
       + '</div>'
@@ -173,7 +209,7 @@
       + '<div style="display:flex;justify-content:space-between;font-size:1rem;color:#6b6b6b;margin:0.5rem 0;">'
       + '<span>Subtotal</span><span>$' + subtotal.toFixed(2) + '</span></div>'
       + '<div style="display:flex;justify-content:space-between;font-size:1rem;color:#6b6b6b;margin:0.5rem 0;">'
-      + '<span>Shipping & Handling</span><span id="shipping-amount">\u2014</span></div>'
+      + '<span>Shipping &amp; Handling</span><span id="shipping-amount">&mdash;</span></div>'
       + '<div style="display:flex;justify-content:space-between;font-size:1.2rem;font-weight:700;color:#1a1a1a;margin:1rem 0;padding-top:0.75rem;border-top:1px solid rgba(0,0,0,0.1);">'
       + '<span>Total</span><span id="order-total">$' + subtotal.toFixed(2) + '</span></div>'
       + '</div>'
@@ -195,10 +231,9 @@
         document.getElementById('shipping-zone-msg').textContent = 'Please enter a valid 5-digit zip code.';
         return;
       }
-      var zone = getShippingZone(zip);
-      shippingCost = SHIPPING_RATES[zone];
-      var zoneNames = { local: 'Local (MD/DC/VA/DE)', regional: 'East Coast', national: 'National' };
-      document.getElementById('shipping-zone-msg').textContent = 'Zone: ' + zoneNames[zone] + ' — UPS Ground (1-5 business days)';
+      var zoneIndex = getShippingZone(zip);
+      shippingCost = calcShipping(zoneIndex, totalWeight);
+      document.getElementById('shipping-zone-msg').textContent = 'Zone: ' + ZONE_NAMES[zoneIndex] + ' \u2014 ' + totalWeight + ' lbs \u2014 UPS Ground (1\u20135 business days)';
       updateTotals();
       enableCheckout();
     };
@@ -208,7 +243,7 @@
       if (pickup.checked) {
         shippingCost = 0;
         document.getElementById('shipping-zip').value = '';
-        document.getElementById('shipping-zone-msg').textContent = 'Local pickup — contact us to arrange a time.';
+        document.getElementById('shipping-zone-msg').textContent = 'Local pickup \u2014 contact us to arrange a time.';
         updateTotals();
         enableCheckout();
       } else {
@@ -232,14 +267,14 @@
     }
 
     window.proceedToCheckout = function() {
-      var items = NHDCart.getItems();
-      if (!items.length) return;
+      var cartItems = NHDCart.getItems();
+      if (!cartItems.length) return;
       var btn = document.getElementById('checkout-pay-btn');
       btn.disabled = true;
       btn.textContent = 'Processing...';
 
       var payload = {
-        items: items.map(function(i) {
+        items: cartItems.map(function(i) {
           return {
             name: i.name + (i.options && i.options.length ? ' (' + i.options.join(', ') + ')' : ''),
             price: i.price,
