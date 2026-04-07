@@ -46,24 +46,24 @@
           <input type="date" id="refund-order-date" name="order-date" required />
         </div>
         <div class="form-group">
-          <label for="refund-items">Items Ordered <small style="color:#6b6b6b;">(select all that apply)</small></label>
-          <select id="refund-items" name="items" multiple required style="min-height:200px;">
-            <option value="A Pirate's Dream">A Pirate's Dream</option>
-            <option value="Chocolate Surrender">Chocolate Surrender</option>
-            <option value="Day & Night">Day & Night</option>
-            <option value="Just Peachy">Just Peachy</option>
-            <option value="Lemon Cake">Lemon Cake</option>
-            <option value="Red Velvet Cake">Red Velvet Cake</option>
-            <option value="Creme de la Creme">Creme de la Creme</option>
-            <option value="Cakesters">Cakesters</option>
-            <option value="Individually Wrapped Cakesters">Individually Wrapped Cakesters</option>
-            <option value="Cookie Royale">Cookie Royale</option>
-            <option value="One Tough Cookie">One Tough Cookie</option>
-            <option value="Honey Crunch">Honey Crunch</option>
-            <option value="Apple Confiture">Apple Confiture</option>
-            <option value="Have Your Cake and Eat It">Have Your Cake and Eat It</option>
-            <option value="Heaven's Best">Heaven's Best</option>
-          </select>
+          <label>Items Ordered <small style="color:#6b6b6b;">(select all that apply)</small></label>
+          <div id="refund-items" style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1rem;padding:1rem;border:1px solid #ddd;border-radius:8px;background:#fff;">
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="A Pirate's Dream"> A Pirate's Dream</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Chocolate Surrender"> Chocolate Surrender</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Day & Night"> Day &amp; Night</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Just Peachy"> Just Peachy</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Lemon Cake"> Lemon Cake</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Red Velvet Cake"> Red Velvet Cake</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Creme de la Creme"> Creme de la Creme</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Cakesters"> Cakesters</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Individually Wrapped Cakesters"> Individually Wrapped Cakesters</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Cookie Royale"> Cookie Royale</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="One Tough Cookie"> One Tough Cookie</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Honey Crunch"> Honey Crunch</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Apple Confiture"> Apple Confiture</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Have Your Cake and Eat It"> Have Your Cake and Eat It</label>
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Heaven's Best"> Heaven's Best</label>
+          </div>
         </div>
         <div class="form-group">
           <label for="refund-reason">Reason for Refund</label>
@@ -104,7 +104,7 @@
           name: this.querySelector('[name="name"]').value,
           email: this.querySelector('[name="email"]').value,
           message: 'REFUND REQUEST\n\nOrder Date: ' + this.querySelector('[name="order-date"]').value
-            + '\nItems: ' + Array.from(this.querySelector('[name="items"]').selectedOptions).map(function(o) { return o.value; }).join(', ')
+            + '\nItems: ' + Array.from(this.querySelectorAll('[name="items"]:checked')).map(function(cb) { return cb.value; }).join(', ')
             + '\nReason: ' + this.querySelector('[name="reason"]').value
             + '\nDetails: ' + (this.querySelector('[name="details"]').value || 'N/A')
         })
