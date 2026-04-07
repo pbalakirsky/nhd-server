@@ -15,119 +15,296 @@
   <meta property="og:image" content="https://nhd-static-assets.s3.amazonaws.com/cdn/64779458477d1aa4405357ad/64ac646aa0159eddda1a5f5e_NinaSergeyWedding_0088%201.png" />
   <meta property="og:url" content="https://www.ninashomemadedelights.com/refund.html" />
   <meta property="og:type" content="website" />
+  <style>
+    .refund-stepper { display:flex; justify-content:center; gap:0; margin:2rem auto 2.5rem; max-width:500px; }
+    .refund-step { flex:1; text-align:center; position:relative; }
+    .refund-step .step-dot { width:36px; height:36px; border-radius:50%; background:#ddd; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem; transition:background 0.3s; }
+    .refund-step.active .step-dot { background:var(--color-accent, #8b5e3c); }
+    .refund-step.done .step-dot { background:#2e7d32; }
+    .refund-step .step-label { display:block; font-size:0.75rem; color:#6b6b6b; margin-top:0.4rem; }
+    .refund-step.active .step-label { color:var(--color-accent, #8b5e3c); font-weight:600; }
+    .refund-step::after { content:''; position:absolute; top:18px; left:calc(50% + 18px); right:calc(-50% + 18px); height:2px; background:#ddd; }
+    .refund-step:last-child::after { display:none; }
+    .refund-step.done::after { background:#2e7d32; }
+
+    .refund-card { background:#fff; padding:2.5rem; border-radius:16px; box-shadow:0 2px 16px rgba(0,0,0,0.06); max-width:600px; margin:0 auto; }
+    .refund-section { display:none; }
+    .refund-section.active { display:block; }
+
+    .refund-policy { background:linear-gradient(135deg, #faf7f5, #f5e6e0); border-radius:12px; padding:1.5rem; margin-bottom:2rem; border-left:4px solid var(--color-accent, #8b5e3c); }
+    .refund-policy h3 { margin:0 0 0.5rem; font-size:1.1rem; }
+    .refund-policy p { font-size:0.9rem; color:#555; margin:0.3rem 0; }
+
+    .item-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+    @media (max-width:500px) { .item-grid { grid-template-columns:1fr; } }
+    .item-chip { display:flex; align-items:center; gap:0.5rem; padding:0.6rem 0.8rem; border:2px solid #eee; border-radius:10px; cursor:pointer; transition:all 0.2s; font-size:0.88rem; }
+    .item-chip:hover { border-color:#ccc; background:#faf7f5; }
+    .item-chip input { display:none; }
+    .item-chip.selected { border-color:var(--color-accent, #8b5e3c); background:#fdf8f5; }
+    .item-chip .chip-check { width:20px; height:20px; border-radius:6px; border:2px solid #ccc; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; font-size:0.75rem; color:transparent; }
+    .item-chip.selected .chip-check { border-color:var(--color-accent, #8b5e3c); background:var(--color-accent, #8b5e3c); color:#fff; }
+
+    .photo-dropzone { border:2px dashed #ddd; border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; position:relative; }
+    .photo-dropzone:hover, .photo-dropzone.dragover { border-color:var(--color-accent, #8b5e3c); background:#fdf8f5; }
+    .photo-dropzone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+    .photo-dropzone .drop-icon { font-size:2rem; margin-bottom:0.5rem; }
+    .photo-dropzone .drop-text { color:#6b6b6b; font-size:0.9rem; }
+    .photo-dropzone .drop-hint { color:#999; font-size:0.8rem; margin-top:0.3rem; }
+    .photo-previews { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem; }
+    .photo-previews img { width:64px; height:64px; object-fit:cover; border-radius:8px; border:2px solid #eee; }
+
+    .nav-buttons { display:flex; gap:1rem; margin-top:2rem; }
+    .nav-buttons .btn { flex:1; }
+    .btn-back { background:transparent; color:var(--color-accent, #8b5e3c); border:2px solid var(--color-accent, #8b5e3c); }
+    .btn-back:hover { background:#fdf8f5; }
+
+    .refund-success-card { text-align:center; padding:3rem 2rem; }
+    .refund-success-card .success-icon { width:64px; height:64px; border-radius:50%; background:#e8f5e9; color:#2e7d32; display:inline-flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:1rem; }
+  </style>
 </head>
 <body>
 
   <section class="page-hero">
-    <h1>Request a Refund</h1>
-    <p>We want you to be completely satisfied. If something isn't right, let us know.</p>
+    <h1>Returns &amp; Refunds</h1>
+    <p>We want you to be completely satisfied with every order.</p>
   </section>
 
   <section class="section section-cream">
-    <div class="container" style="max-width:600px;margin:0 auto;">
-      <div class="delivery-card" style="margin-bottom:2rem;">
-        <h3>Refund Policy</h3>
-        <p>We accept refund requests within <strong>7 days</strong> of delivery. Due to the perishable nature of our products, please contact us as soon as possible if there's an issue with your order.</p>
-        <p style="margin-top:0.5rem;">Refunds are issued to the original payment method and typically take 5-10 business days to appear on your statement.</p>
+    <div class="container" style="max-width:640px;margin:0 auto;">
+
+      <div class="refund-policy">
+        <h3>Our Refund Policy</h3>
+        <p>Refund requests accepted within <strong>7 days</strong> of delivery. Due to the perishable nature of our products, please reach out as soon as possible.</p>
+        <p>Refunds are issued to the original payment method within 5-10 business days.</p>
       </div>
 
-      <form id="refund-form" style="background:#fff;padding:2rem;border-radius:12px;box-shadow:var(--shadow-sm);">
-        <div class="form-group">
-          <label for="refund-name">Full Name</label>
-          <input type="text" id="refund-name" name="name" required />
+      <div class="refund-stepper">
+        <div class="refund-step active" data-step="1">
+          <span class="step-dot">1</span>
+          <span class="step-label">Your Info</span>
         </div>
-        <div class="form-group">
-          <label for="refund-email">Email Address</label>
-          <input type="email" id="refund-email" name="email" required />
-          <small style="color:#6b6b6b;">Use the email you placed the order with.</small>
+        <div class="refund-step" data-step="2">
+          <span class="step-dot">2</span>
+          <span class="step-label">Order Details</span>
         </div>
-        <div class="form-group">
-          <label for="refund-order-date">Approximate Order Date</label>
-          <input type="date" id="refund-order-date" name="order-date" required />
+        <div class="refund-step" data-step="3">
+          <span class="step-dot">3</span>
+          <span class="step-label">Submit</span>
         </div>
-        <div class="form-group">
-          <label>Items Ordered <small style="color:#6b6b6b;">(select all that apply)</small></label>
-          <div id="refund-items" style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1rem;padding:1rem;border:1px solid #ddd;border-radius:8px;background:#fff;">
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="A Pirate's Dream"> A Pirate's Dream</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Chocolate Surrender"> Chocolate Surrender</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Day & Night"> Day &amp; Night</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Just Peachy"> Just Peachy</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Lemon Cake"> Lemon Cake</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Red Velvet Cake"> Red Velvet Cake</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Creme de la Creme"> Creme de la Creme</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Cakesters"> Cakesters</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Individually Wrapped Cakesters"> Individually Wrapped Cakesters</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Cookie Royale"> Cookie Royale</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="One Tough Cookie"> One Tough Cookie</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Honey Crunch"> Honey Crunch</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Apple Confiture"> Apple Confiture</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Have Your Cake and Eat It"> Have Your Cake and Eat It</label>
-            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.9rem;cursor:pointer;font-weight:400;"><input type="checkbox" name="items" value="Heaven's Best"> Heaven's Best</label>
+      </div>
+
+      <div class="refund-card">
+        <form id="refund-form">
+
+          <!-- Step 1: Your Info -->
+          <div class="refund-section active" data-section="1">
+            <h2 style="margin:0 0 0.25rem;font-size:1.3rem;">Your Information</h2>
+            <p style="color:#6b6b6b;font-size:0.9rem;margin:0 0 1.5rem;">So we can look up your order and get back to you.</p>
+            <div class="form-group">
+              <label for="refund-name">Full Name</label>
+              <input type="text" id="refund-name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="refund-email">Email Address</label>
+              <input type="email" id="refund-email" name="email" required />
+              <small style="color:#999;">The email used when placing the order.</small>
+            </div>
+            <div class="form-group">
+              <label for="refund-order-date">Approximate Order Date</label>
+              <input type="date" id="refund-order-date" name="order-date" required />
+            </div>
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-primary btn-full" onclick="goToStep(2)">Continue</button>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="refund-reason">Reason for Refund</label>
-          <select id="refund-reason" name="reason" required>
-            <option value="">Select a reason</option>
-            <option value="Damaged in shipping">Damaged in shipping</option>
-            <option value="Wrong item received">Wrong item received</option>
-            <option value="Quality issue">Quality issue</option>
-            <option value="Never received">Never received</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="refund-details">Additional Details</label>
-          <textarea id="refund-details" name="details" rows="4" placeholder="Please describe the issue."></textarea>
-        </div>
-        <div class="form-group">
-          <label for="refund-photos">Photos <small style="color:#6b6b6b;">(optional — helps us resolve issues faster)</small></label>
-          <input type="file" id="refund-photos" name="photos" multiple accept="image/*" style="padding:0.5rem;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;" />
-        </div>
-        <button type="submit" class="btn btn-primary btn-full">Submit Refund Request</button>
-        <div id="refund-success" style="display:none;margin-top:1rem;padding:1rem;background:#e8f5e9;border-radius:8px;color:#2e7d32;text-align:center;">
-          Your refund request has been submitted. We'll review it and get back to you within 24 hours.
-        </div>
-      </form>
+
+          <!-- Step 2: Order Details -->
+          <div class="refund-section" data-section="2">
+            <h2 style="margin:0 0 0.25rem;font-size:1.3rem;">Order Details</h2>
+            <p style="color:#6b6b6b;font-size:0.9rem;margin:0 0 1.5rem;">Tell us what went wrong so we can make it right.</p>
+
+            <div class="form-group">
+              <label>Which items? <small style="color:#999;">Tap to select</small></label>
+              <div class="item-grid" id="refund-items"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="refund-reason">Reason for Refund</label>
+              <select id="refund-reason" name="reason" required>
+                <option value="">Select a reason</option>
+                <option value="Damaged in shipping">Damaged in shipping</option>
+                <option value="Wrong item received">Wrong item received</option>
+                <option value="Quality issue">Quality issue</option>
+                <option value="Never received">Never received</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="refund-details">Tell us more <small style="color:#999;">(optional)</small></label>
+              <textarea id="refund-details" name="details" rows="3" placeholder="Describe the issue..."></textarea>
+            </div>
+
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-back" onclick="goToStep(1)">Back</button>
+              <button type="button" class="btn btn-primary" onclick="goToStep(3)">Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Photos & Submit -->
+          <div class="refund-section" data-section="3">
+            <h2 style="margin:0 0 0.25rem;font-size:1.3rem;">Photos &amp; Submit</h2>
+            <p style="color:#6b6b6b;font-size:0.9rem;margin:0 0 1.5rem;">Photos help us resolve your request faster.</p>
+
+            <div class="form-group">
+              <label>Upload Photos <small style="color:#999;">(optional, up to 5)</small></label>
+              <div class="photo-dropzone" id="photo-dropzone">
+                <input type="file" id="refund-photos" name="photos" multiple accept="image/*" />
+                <div class="drop-icon">📷</div>
+                <div class="drop-text">Tap to upload or drag photos here</div>
+                <div class="drop-hint">JPG, PNG — max 10MB each</div>
+              </div>
+              <div class="photo-previews" id="photo-previews"></div>
+            </div>
+
+            <div id="refund-summary" style="background:#faf7f5;border-radius:10px;padding:1rem 1.25rem;margin:1.5rem 0;font-size:0.9rem;"></div>
+
+            <div class="nav-buttons">
+              <button type="button" class="btn btn-back" onclick="goToStep(2)">Back</button>
+              <button type="submit" class="btn btn-primary">Submit Request</button>
+            </div>
+          </div>
+
+          <!-- Success -->
+          <div class="refund-section" data-section="done">
+            <div class="refund-success-card">
+              <div class="success-icon">&#10003;</div>
+              <h2>Request Submitted</h2>
+              <p style="color:#6b6b6b;margin:0.5rem 0 1.5rem;">We've received your refund request and will review it within 24 hours. You'll hear from us at the email you provided.</p>
+              <a href="/" class="btn btn-primary">Back to Home</a>
+            </div>
+          </div>
+
+        </form>
+      </div>
     </div>
   </section>
 
   <script src="/js/cart.js"></script>
   <script src="/js/components.js"></script>
   <script>
-  document.getElementById('refund-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var btn = this.querySelector('button[type="submit"]');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
-    try {
-      var formData = new FormData();
-      formData.append('name', this.querySelector('[name="name"]').value);
-      formData.append('email', this.querySelector('[name="email"]').value);
-      formData.append('message', 'REFUND REQUEST\n\nOrder Date: ' + this.querySelector('[name="order-date"]').value
-        + '\nItems: ' + Array.from(this.querySelectorAll('[name="items"]:checked')).map(function(cb) { return cb.value; }).join(', ')
-        + '\nReason: ' + this.querySelector('[name="reason"]').value
-        + '\nDetails: ' + (this.querySelector('[name="details"]').value || 'N/A'));
-      var photos = this.querySelector('[name="photos"]').files;
-      for (var i = 0; i < photos.length; i++) { formData.append('photos', photos[i]); }
-      var res = await fetch('/api/refund', {
-        method: 'POST',
-        body: formData
+  (function() {
+    // Product list for checkboxes
+    var products = [
+      "A Pirate's Dream", "Chocolate Surrender", "Day & Night", "Just Peachy",
+      "Lemon Cake", "Red Velvet Cake", "Creme de la Creme", "Cakesters",
+      "Individually Wrapped Cakesters", "Cookie Royale", "One Tough Cookie",
+      "Honey Crunch", "Apple Confiture", "Have Your Cake and Eat It", "Heaven's Best"
+    ];
+
+    var grid = document.getElementById('refund-items');
+    products.forEach(function(name) {
+      var chip = document.createElement('label');
+      chip.className = 'item-chip';
+      chip.innerHTML = '<input type="checkbox" name="items" value="' + name + '"><span class="chip-check">&#10003;</span>' + name;
+      chip.addEventListener('click', function() {
+        var cb = this.querySelector('input');
+        setTimeout(function() { chip.classList.toggle('selected', cb.checked); }, 0);
       });
-      var data = await res.json();
-      if (data.success) {
-        this.querySelector('button').style.display = 'none';
-        document.getElementById('refund-success').style.display = 'block';
-      } else {
-        alert(data.error || 'Something went wrong. Please try again.');
+      grid.appendChild(chip);
+    });
+
+    // Photo preview
+    var photoInput = document.getElementById('refund-photos');
+    var previews = document.getElementById('photo-previews');
+    var dropzone = document.getElementById('photo-dropzone');
+
+    photoInput.addEventListener('change', function() {
+      previews.innerHTML = '';
+      Array.from(this.files).forEach(function(file) {
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        previews.appendChild(img);
+      });
+    });
+
+    ['dragover','dragenter'].forEach(function(ev) {
+      dropzone.addEventListener(ev, function(e) { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(function(ev) {
+      dropzone.addEventListener(ev, function() { dropzone.classList.remove('dragover'); });
+    });
+
+    // Stepper navigation
+    window.goToStep = function(step) {
+      // Validate current step before advancing
+      if (step === 2) {
+        var name = document.getElementById('refund-name').value;
+        var email = document.getElementById('refund-email').value;
+        var date = document.getElementById('refund-order-date').value;
+        if (!name || !email || !date) { alert('Please fill in all fields.'); return; }
       }
-    } catch (err) {
-      alert('Could not submit request. Please try again.');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Submit Refund Request';
+      if (step === 3) {
+        var checked = document.querySelectorAll('[name="items"]:checked');
+        var reason = document.getElementById('refund-reason').value;
+        if (!checked.length) { alert('Please select at least one item.'); return; }
+        if (!reason) { alert('Please select a reason.'); return; }
+        updateSummary();
+      }
+
+      document.querySelectorAll('.refund-section').forEach(function(s) { s.classList.remove('active'); });
+      document.querySelector('[data-section="' + step + '"]').classList.add('active');
+
+      document.querySelectorAll('.refund-step').forEach(function(s) {
+        var n = parseInt(s.dataset.step);
+        s.classList.remove('active', 'done');
+        if (n < step) s.classList.add('done');
+        if (n === step) s.classList.add('active');
+      });
+    };
+
+    function updateSummary() {
+      var items = Array.from(document.querySelectorAll('[name="items"]:checked')).map(function(cb) { return cb.value; });
+      var reason = document.getElementById('refund-reason').value;
+      var html = '<strong>Review your request:</strong><br>';
+      html += '<span style="color:#555;">Items: </span>' + items.join(', ') + '<br>';
+      html += '<span style="color:#555;">Reason: </span>' + reason;
+      document.getElementById('refund-summary').innerHTML = html;
     }
-  });
+
+    // Form submit
+    document.getElementById('refund-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      try {
+        var formData = new FormData();
+        formData.append('name', document.getElementById('refund-name').value);
+        formData.append('email', document.getElementById('refund-email').value);
+        formData.append('message', 'REFUND REQUEST\n\nOrder Date: ' + document.getElementById('refund-order-date').value
+          + '\nItems: ' + Array.from(document.querySelectorAll('[name="items"]:checked')).map(function(cb) { return cb.value; }).join(', ')
+          + '\nReason: ' + document.getElementById('refund-reason').value
+          + '\nDetails: ' + (document.getElementById('refund-details').value || 'N/A'));
+        var photos = document.getElementById('refund-photos').files;
+        for (var i = 0; i < photos.length; i++) { formData.append('photos', photos[i]); }
+        var res = await fetch('/api/refund', { method: 'POST', body: formData });
+        var data = await res.json();
+        if (data.success) {
+          document.querySelectorAll('.refund-section').forEach(function(s) { s.classList.remove('active'); });
+          document.querySelector('[data-section="done"]').classList.add('active');
+          document.querySelectorAll('.refund-step').forEach(function(s) { s.classList.add('done'); s.classList.remove('active'); });
+        } else {
+          alert(data.error || 'Something went wrong. Please try again.');
+        }
+      } catch (err) {
+        alert('Could not submit request. Please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Request';
+      }
+    });
+  })();
   </script>
 </body>
 </html>
