@@ -103,12 +103,30 @@
       '450','451','452','453','454','455','456','457','458','459'
     ];
 
-    // Per-item shipping rates based on actual shipping costs
-    // Real data: White Plains MD $15.45, NYC $16, GA $33, CO $35, UT $50
-    // Each item ships in a large box — price per item, not by weight
-    // [local, regional, national]
-    var BASE_RATE = [15.50, 16.00, 35.00];       // 1st item
-    var ADDITIONAL_RATE = [10.00, 12.00, 15.00];  // each extra item
+    // Per-item shipping — each item ships in its own box
+    // Real data: MD $15.45, NYC $16, GA $33, CO $35, UT $50 (full cakes)
+    // Base rates for a full-size cake box [local, regional, national]
+    var FULL_CAKE_RATE = [15.50, 16.00, 35.00];
+
+    // Ship rate multiplier per product (relative to full cake box)
+    // 1.0 = full cake box, smaller items = fraction
+    var SHIP_MULTIPLIERS = {
+      "A Pirate's Dream":    1.0,   // full bundt cake
+      "Chocolate Surrender": 1.0,
+      "Day & Night":         1.0,   // layered cake
+      "Just Peachy":         1.0,
+      "Lemon Cake":          1.0,
+      "Red Velvet Cake":     1.0,
+      "Creme de la Creme":   1.0,   // 3lb flan
+      "Cakesters":           0.75,  // dozen mini cakes, medium box
+      "Individually Wrapped Cakesters": 0.75,
+      "Honey Crunch":        0.65,  // teiglach, medium container
+      "Cookie Royale":       0.45,  // per-pound cookies, small box
+      "One Tough Cookie":    0.45,  // per-pound biscotti, small box
+      "Apple Confiture":     0.35,  // small jar
+      "Heaven's Best":       0,     // local pickup only
+      "Have Your Cake and Eat It": 0 // local pickup only
+    };
 
     var DEFAULT_WEIGHT = 4; // fallback if item has no weight set
 
@@ -122,9 +140,15 @@
 
     var ZONE_NAMES = ['Local (MD/DC/VA/DE/WV)', 'Regional (East Coast)', 'National'];
 
-    function calcShipping(zoneIndex, itemCount) {
-      if (itemCount <= 0) return 0;
-      return BASE_RATE[zoneIndex] + ADDITIONAL_RATE[zoneIndex] * (itemCount - 1);
+    function calcShipping(zoneIndex, cartItems) {
+      var total = 0;
+      cartItems.forEach(function(item) {
+        var mult = SHIP_MULTIPLIERS[item.name];
+        if (mult === undefined) mult = 1.0; // default to full cake if unknown
+        if (mult === 0) return; // pickup only, no shipping
+        total += FULL_CAKE_RATE[zoneIndex] * mult * item.quantity;
+      });
+      return Math.round(total * 100) / 100;
     }
 
     var shippingCost = 0;
@@ -256,7 +280,7 @@
         return;
       }
       var zoneIndex = getShippingZone(zip);
-      shippingCost = calcShipping(zoneIndex, totalItems);
+      shippingCost = calcShipping(zoneIndex, NHDCart.getItems());
       document.getElementById('shipping-zone-msg').textContent = 'Zone: ' + ZONE_NAMES[zoneIndex] + ' \u2014 ' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' \u2014 UPS Ground (1\u20135 business days)';
       updateTotals();
       enableCheckout();
