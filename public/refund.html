@@ -46,8 +46,24 @@
           <input type="date" id="refund-order-date" name="order-date" required />
         </div>
         <div class="form-group">
-          <label for="refund-items">Items Ordered</label>
-          <input type="text" id="refund-items" name="items" placeholder="e.g., A Pirate's Dream, Cookie Royale 2 lbs" required />
+          <label for="refund-items">Items Ordered <small style="color:#6b6b6b;">(select all that apply)</small></label>
+          <select id="refund-items" name="items" multiple required style="min-height:200px;">
+            <option value="A Pirate's Dream">A Pirate's Dream</option>
+            <option value="Chocolate Surrender">Chocolate Surrender</option>
+            <option value="Day & Night">Day & Night</option>
+            <option value="Just Peachy">Just Peachy</option>
+            <option value="Lemon Cake">Lemon Cake</option>
+            <option value="Red Velvet Cake">Red Velvet Cake</option>
+            <option value="Creme de la Creme">Creme de la Creme</option>
+            <option value="Cakesters">Cakesters</option>
+            <option value="Individually Wrapped Cakesters">Individually Wrapped Cakesters</option>
+            <option value="Cookie Royale">Cookie Royale</option>
+            <option value="One Tough Cookie">One Tough Cookie</option>
+            <option value="Honey Crunch">Honey Crunch</option>
+            <option value="Apple Confiture">Apple Confiture</option>
+            <option value="Have Your Cake and Eat It">Have Your Cake and Eat It</option>
+            <option value="Heaven's Best">Heaven's Best</option>
+          </select>
         </div>
         <div class="form-group">
           <label for="refund-reason">Reason for Refund</label>
@@ -88,7 +104,7 @@
           name: this.querySelector('[name="name"]').value,
           email: this.querySelector('[name="email"]').value,
           message: 'REFUND REQUEST\n\nOrder Date: ' + this.querySelector('[name="order-date"]').value
-            + '\nItems: ' + this.querySelector('[name="items"]').value
+            + '\nItems: ' + Array.from(this.querySelector('[name="items"]').selectedOptions).map(function(o) { return o.value; }).join(', ')
             + '\nReason: ' + this.querySelector('[name="reason"]').value
             + '\nDetails: ' + (this.querySelector('[name="details"]').value || 'N/A')
         })
