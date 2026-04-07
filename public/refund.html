@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5e6e0" />
+  <title>Request a Refund — Nina's Homemade Delights</title>
+  <meta name="description" content="Request a refund for your Nina's Homemade Delights order. We'll review your request and get back to you within 24 hours." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Halant:wght@400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;1,6..12,400&family=WindSong:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/modern.css" />
+  <meta property="og:title" content="Request a Refund — Nina's Homemade Delights" />
+  <meta property="og:description" content="Request a refund for your Nina's Homemade Delights order." />
+  <meta property="og:image" content="https://nhd-static-assets.s3.amazonaws.com/cdn/64779458477d1aa4405357ad/64ac646aa0159eddda1a5f5e_NinaSergeyWedding_0088%201.png" />
+  <meta property="og:url" content="https://www.ninashomemadedelights.com/refund.html" />
+  <meta property="og:type" content="website" />
+</head>
+<body>
+
+  <section class="page-hero">
+    <h1>Request a Refund</h1>
+    <p>We want you to be completely satisfied. If something isn't right, let us know.</p>
+  </section>
+
+  <section class="section section-cream">
+    <div class="container" style="max-width:600px;margin:0 auto;">
+      <div class="delivery-card" style="margin-bottom:2rem;">
+        <h3>Refund Policy</h3>
+        <p>We accept refund requests within <strong>7 days</strong> of delivery. Due to the perishable nature of our products, please contact us as soon as possible if there's an issue with your order.</p>
+        <p style="margin-top:0.5rem;">Refunds are issued to the original payment method and typically take 5-10 business days to appear on your statement.</p>
+      </div>
+
+      <form id="refund-form" style="background:#fff;padding:2rem;border-radius:12px;box-shadow:var(--shadow-sm);">
+        <div class="form-group">
+          <label for="refund-name">Full Name</label>
+          <input type="text" id="refund-name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="refund-email">Email Address</label>
+          <input type="email" id="refund-email" name="email" required />
+          <small style="color:#6b6b6b;">Use the email you placed the order with.</small>
+        </div>
+        <div class="form-group">
+          <label for="refund-order-date">Approximate Order Date</label>
+          <input type="date" id="refund-order-date" name="order-date" required />
+        </div>
+        <div class="form-group">
+          <label for="refund-items">Items Ordered</label>
+          <input type="text" id="refund-items" name="items" placeholder="e.g., A Pirate's Dream, Cookie Royale 2 lbs" required />
+        </div>
+        <div class="form-group">
+          <label for="refund-reason">Reason for Refund</label>
+          <select id="refund-reason" name="reason" required>
+            <option value="">Select a reason</option>
+            <option value="Damaged in shipping">Damaged in shipping</option>
+            <option value="Wrong item received">Wrong item received</option>
+            <option value="Quality issue">Quality issue</option>
+            <option value="Never received">Never received</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="refund-details">Additional Details</label>
+          <textarea id="refund-details" name="details" rows="4" placeholder="Please describe the issue. If the item was damaged, attaching a photo to a follow-up email helps us resolve this faster."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Submit Refund Request</button>
+        <div id="refund-success" style="display:none;margin-top:1rem;padding:1rem;background:#e8f5e9;border-radius:8px;color:#2e7d32;text-align:center;">
+          Your refund request has been submitted. We'll review it and get back to you within 24 hours.
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+  document.getElementById('refund-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    try {
+      var res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: this.querySelector('[name="name"]').value,
+          email: this.querySelector('[name="email"]').value,
+          message: 'REFUND REQUEST\n\nOrder Date: ' + this.querySelector('[name="order-date"]').value
+            + '\nItems: ' + this.querySelector('[name="items"]').value
+            + '\nReason: ' + this.querySelector('[name="reason"]').value
+            + '\nDetails: ' + (this.querySelector('[name="details"]').value || 'N/A')
+        })
+      });
+      var data = await res.json();
+      if (data.success) {
+        this.querySelector('button').style.display = 'none';
+        document.getElementById('refund-success').style.display = 'block';
+      } else {
+        alert(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      alert('Could not submit request. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Refund Request';
+    }
+  });
+  </script>
+</body>
+</html>

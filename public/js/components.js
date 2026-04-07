@@ -60,6 +60,7 @@
             <a href="/about.html">Our Story</a>
             <a href="/contact.html">Contact Us</a>
             <a href="/order-delivery-pickup.html">Order &amp; Delivery</a>
+            <a href="/refund.html">Refund Request</a>
           </div>
         </div>
         <div>
