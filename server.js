@@ -7,6 +7,8 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 const fs = require('fs');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024, files: 5 } });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -163,6 +165,39 @@ app.post('/api/subscribe', async (req, res) => {
   } catch (err) {
     console.error('Subscribe error:', err.message);
     res.status(500).json({ error: 'Failed to subscribe.' });
+  }
+});
+
+// Refund request with photo attachments
+app.post('/api/refund', contactLimiter, upload.array('photos', 5), async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Name, email, and details are required.' });
+    }
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+    });
+    const attachments = (req.files || []).map(f => ({
+      filename: f.originalname,
+      content: f.buffer,
+      contentType: f.mimetype
+    }));
+    await transporter.sendMail({
+      from: `"NHD Website" <${process.env.SMTP_USER}>`,
+      to: 'nina.malyutina@gmail.com',
+      replyTo: email,
+      subject: `Refund request from ${name}`,
+      text: `${message}\n\nCustomer email: ${email}\n${attachments.length ? attachments.length + ' photo(s) attached.' : 'No photos attached.'}`,
+      attachments
+    });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Refund form error:', err.message);
+    res.status(500).json({ error: 'Failed to submit request. Please try again.' });
   }
 });
 

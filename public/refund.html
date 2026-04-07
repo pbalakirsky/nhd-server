@@ -78,7 +78,11 @@
         </div>
         <div class="form-group">
           <label for="refund-details">Additional Details</label>
-          <textarea id="refund-details" name="details" rows="4" placeholder="Please describe the issue. If the item was damaged, attaching a photo to a follow-up email helps us resolve this faster."></textarea>
+          <textarea id="refund-details" name="details" rows="4" placeholder="Please describe the issue."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="refund-photos">Photos <small style="color:#6b6b6b;">(optional — helps us resolve issues faster)</small></label>
+          <input type="file" id="refund-photos" name="photos" multiple accept="image/*" style="padding:0.5rem;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;" />
         </div>
         <button type="submit" class="btn btn-primary btn-full">Submit Refund Request</button>
         <div id="refund-success" style="display:none;margin-top:1rem;padding:1rem;background:#e8f5e9;border-radius:8px;color:#2e7d32;text-align:center;">
@@ -97,17 +101,18 @@
     btn.disabled = true;
     btn.textContent = 'Submitting...';
     try {
-      var res = await fetch('/api/contact', {
+      var formData = new FormData();
+      formData.append('name', this.querySelector('[name="name"]').value);
+      formData.append('email', this.querySelector('[name="email"]').value);
+      formData.append('message', 'REFUND REQUEST\n\nOrder Date: ' + this.querySelector('[name="order-date"]').value
+        + '\nItems: ' + Array.from(this.querySelectorAll('[name="items"]:checked')).map(function(cb) { return cb.value; }).join(', ')
+        + '\nReason: ' + this.querySelector('[name="reason"]').value
+        + '\nDetails: ' + (this.querySelector('[name="details"]').value || 'N/A'));
+      var photos = this.querySelector('[name="photos"]').files;
+      for (var i = 0; i < photos.length; i++) { formData.append('photos', photos[i]); }
+      var res = await fetch('/api/refund', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: this.querySelector('[name="name"]').value,
-          email: this.querySelector('[name="email"]').value,
-          message: 'REFUND REQUEST\n\nOrder Date: ' + this.querySelector('[name="order-date"]').value
-            + '\nItems: ' + Array.from(this.querySelectorAll('[name="items"]:checked')).map(function(cb) { return cb.value; }).join(', ')
-            + '\nReason: ' + this.querySelector('[name="reason"]').value
-            + '\nDetails: ' + (this.querySelector('[name="details"]').value || 'N/A')
-        })
+        body: formData
       });
       var data = await res.json();
       if (data.success) {
