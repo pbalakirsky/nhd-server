@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5e6e0" />
+  <title>Just Peachy — Nina's Homemade Delights</title>
+  <meta name="description" content="Fresh peaches baked into a lush, tender cake — available in round or heart-shaped. Warm it slightly and serve with ice cream for an unforgettable finish." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Halant:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=WindSong&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/modern.css" />
+</head>
+<body>
+  <!-- nav injected by components.js -->
+
+  <section class="product-detail">
+    <div class="container">
+      <div class="product-detail-img">
+        <img src="https://nhd-static-assets.s3.amazonaws.com/cdn/6477946868cf8693cfa8ace3/651c886a9d81b9ae2acab891_just%20peachy.PNG" alt="Just Peachy" />
+      </div>
+      <div class="product-detail-info">
+        <h1>Just Peachy</h1>
+        <p class="product-price">$60.00</p>
+        <p class="product-description">Fresh peaches baked into a lush, tender cake — available in round or heart-shaped. Warm it slightly and serve with ice cream for an unforgettable finish.</p>
+
+        <div class="product-form-group">
+          <label for="shape">Shape</label>
+          <select id="shape">
+            <option value="Heart">Heart</option>
+            <option value="Round">Round</option>
+          </select>
+        </div>
+
+        <div class="product-form-group">
+          <label for="qty">Quantity</label>
+          <input type="number" id="qty" value="1" min="1" max="10" />
+        </div>
+
+        <button class="btn btn-primary" onclick="addToCart()">Add to Cart</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer injected by components.js -->
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+  function addToCart() {
+    const options = [];
+    document.querySelectorAll('.product-detail-info select').forEach(s => {
+      options.push(s.value);
+    });
+    const qtyEl = document.getElementById('qty');
+    const qty = qtyEl ? parseInt(qtyEl.value) || 1 : 1;
+    NHDCart.addItem({
+      name: 'Just Peachy',
+      price: 60.00,
+      image: 'https://nhd-static-assets.s3.amazonaws.com/cdn/6477946868cf8693cfa8ace3/651c886a9d81b9ae2acab891_just%20peachy.PNG',
+      quantity: qty,
+      options: options
+    });
+  }
+  </script>
+</body>
+</html>

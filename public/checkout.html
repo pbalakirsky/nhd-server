@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5e6e0" />
+  <title>Checkout — Nina's Homemade Delights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Halant:wght@400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;1,6..12,400&family=WindSong:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/modern.css" />
+</head>
+<body>
+
+  <div id="checkout-content" class="checkout-message" style="padding:4rem 0;">
+    <div class="container">
+      <!-- Default: show cart review -->
+      <div id="checkout-default">
+        <h1>Your Order</h1>
+        <p>Review your items below, then proceed to secure checkout.</p>
+        <div id="checkout-items" style="max-width:600px;margin:2rem auto;">
+          <!-- JS will populate this -->
+        </div>
+        <div id="checkout-actions" style="max-width:600px;margin:0 auto;text-align:center;">
+          <!-- JS will populate total + button -->
+        </div>
+      </div>
+
+      <!-- Success state (hidden by default) -->
+      <div id="checkout-success" style="display:none">
+        <div class="icon" style="font-size:3rem;color:#2e7d32;margin-bottom:1rem;">&#10003;</div>
+        <h1>Thank You!</h1>
+        <p>Your order has been placed successfully. You'll receive a confirmation email shortly.</p>
+        <a href="/" class="btn btn-primary mt-3">Back to Home</a>
+      </div>
+
+      <!-- Cancel state (hidden by default) -->
+      <div id="checkout-cancel" style="display:none">
+        <div class="icon" style="font-size:3rem;color:#c0392b;margin-bottom:1rem;">&#10007;</div>
+        <h1>Order Canceled</h1>
+        <p>Your order was not completed. Your cart items are still saved.</p>
+        <a href="/category/all-products.html" class="btn btn-primary mt-3">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+
+    if (params.get('success') === 'true') {
+      document.getElementById('checkout-default').style.display = 'none';
+      document.getElementById('checkout-success').style.display = 'block';
+      NHDCart.clear();
+      return;
+    }
+
+    if (params.get('canceled') === 'true') {
+      document.getElementById('checkout-default').style.display = 'none';
+      document.getElementById('checkout-cancel').style.display = 'block';
+      return;
+    }
+
+    // Default: show cart items for review
+    var items = NHDCart.getItems();
+    var itemsDiv = document.getElementById('checkout-items');
+    var actionsDiv = document.getElementById('checkout-actions');
+
+    if (!items.length) {
+      itemsDiv.innerHTML = '<p style="text-align:center;padding:3rem 0;">Your cart is empty.</p>';
+      actionsDiv.innerHTML = '<a href="/category/all-products.html" class="btn btn-outline">Start Shopping</a>';
+      return;
+    }
+
+    var html = '';
+    items.forEach(function(item, i) {
+      html += '<div style="display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid rgba(0,0,0,0.06);align-items:center;">';
+      html += '<img src="' + item.image + '" alt="' + item.name + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" />';
+      html += '<div style="flex:1;text-align:left;">';
+      html += '<strong style="color:#1a1a1a;">' + item.name + '</strong>';
+      if (item.options && item.options.length) {
+        html += '<br><small style="color:#6b6b6b;">' + item.options.join(', ') + '</small>';
+      }
+      html += '</div>';
+      html += '<div style="text-align:right;">';
+      html += '<span style="color:#6b6b6b;">x' + item.quantity + '</span><br>';
+      html += '<strong style="color:#8b5e3c;">$' + (item.price * item.quantity).toFixed(2) + '</strong>';
+      html += '</div>';
+      html += '</div>';
+    });
+    itemsDiv.innerHTML = html;
+
+    var total = NHDCart.getTotal();
+    actionsDiv.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:1.2rem;font-weight:700;color:#1a1a1a;margin:1.5rem 0;">'
+      + '<span>Total</span><span>$' + total.toFixed(2) + '</span></div>'
+      + '<button class="btn btn-primary btn-full" onclick="NHDCart.checkout()">Pay with Card / Venmo</button>'
+      + '<p style="font-size:0.8rem;color:#6b6b6b;margin-top:0.75rem;">You\'ll be redirected to Stripe\'s secure payment page.</p>'
+      + '<div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(0,0,0,0.1);">'
+      + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;">Or pay with Zelle</p>'
+      + '<p style="font-size:0.9rem;color:#6b6b6b;margin-bottom:0.5rem;">Send your total to one of the following:</p>'
+      + '<p style="font-size:0.9rem;color:#1a1a1a;margin:0.25rem 0;"><strong>Phone:</strong> 443-204-4402</p>'
+      + '<p style="font-size:0.9rem;color:#1a1a1a;margin:0.25rem 0;"><strong>Email:</strong> nina.malyutina@gmail.com</p>'
+      + '<p style="font-size:0.8rem;color:#6b6b6b;margin-top:0.75rem;">Please include your name and order details in the Zelle memo. We\'ll confirm your order via email.</p>'
+      + '</div>';
+  })();
+  </script>
+</body>
+</html>
