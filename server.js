@@ -121,7 +121,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
     }));
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'venmo'],
+      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: `${DOMAIN}/checkout.html?success=true`,
