@@ -246,17 +246,18 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   .nav-toggle { display: flex; }
   .nav-links {
     position: fixed;
-    top: 60px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background: var(--color-white);
     flex-direction: column;
-    padding: 2rem;
+    padding: 5rem 2rem 2rem;
     gap: 1.5rem;
     transform: translateX(100%);
     transition: var(--transition);
     z-index: 99;
+    overflow-y: auto;
   }
   .nav-links.open { transform: translateX(0); }
   .nav-dropdown-menu {
