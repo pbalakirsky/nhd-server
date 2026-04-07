@@ -246,18 +246,19 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   .nav-toggle { display: flex; }
   .nav-links {
     position: fixed;
-    top: 0;
+    top: 60px;
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--color-white);
+    background: #ffffff;
     flex-direction: column;
-    padding: 5rem 2rem 2rem;
+    padding: 2rem;
     gap: 1.5rem;
     transform: translateX(100%);
     transition: var(--transition);
     z-index: 99;
     overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
   .nav-links.open { transform: translateX(0); }
   .nav-dropdown-menu {
@@ -943,6 +944,7 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   .trust-strip { gap: 1.5rem; padding: 1.5rem 1rem; }
 }
 @media (max-width: 767px) {
+  .navbar { background: #ffffff; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .container { padding: 0 1.25rem; }
   .hero { padding: 4rem 0 2.5rem; }
   .hero p { font-size: 1.05rem; margin-bottom: 2rem; }
