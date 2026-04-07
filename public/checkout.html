@@ -103,21 +103,12 @@
       '450','451','452','453','454','455','456','457','458','459'
     ];
 
-    // Shipping rate table based on actual shipping costs
-    // Accounts for DIM weight (bulky cake boxes ~16x16x8")
-    // Real data points: NYC $16, GA $33, CO $35, UT $50
-    // Columns = [local (MD/DC/VA/DE/WV), regional (East Coast), national]
-    // Each additional item adds ~$8-15 depending on zone (larger combined box)
-    var RATE_TABLE = [
-      { maxLbs: 5,  rates: [15.50, 16.00, 35.00] },
-      { maxLbs: 10, rates: [19.00, 22.00, 42.00] },
-      { maxLbs: 15, rates: [23.00, 28.00, 50.00] },
-      { maxLbs: 20, rates: [27.00, 33.00, 58.00] },
-      { maxLbs: 30, rates: [33.00, 40.00, 68.00] },
-      { maxLbs: 40, rates: [39.00, 48.00, 78.00] },
-      { maxLbs: 50, rates: [45.00, 55.00, 88.00] },
-      { maxLbs: 999,rates: [52.00, 65.00, 100.00] }
-    ];
+    // Per-item shipping rates based on actual shipping costs
+    // Real data: White Plains MD $15.45, NYC $16, GA $33, CO $35, UT $50
+    // Each item ships in a large box — price per item, not by weight
+    // [local, regional, national]
+    var BASE_RATE = [15.50, 16.00, 35.00];       // 1st item
+    var ADDITIONAL_RATE = [10.00, 12.00, 15.00];  // each extra item
 
     var DEFAULT_WEIGHT = 4; // fallback if item has no weight set
 
@@ -131,13 +122,9 @@
 
     var ZONE_NAMES = ['Local (MD/DC/VA/DE/WV)', 'Regional (East Coast)', 'National'];
 
-    function calcShipping(zoneIndex, totalLbs) {
-      for (var i = 0; i < RATE_TABLE.length; i++) {
-        if (totalLbs <= RATE_TABLE[i].maxLbs) {
-          return RATE_TABLE[i].rates[zoneIndex];
-        }
-      }
-      return RATE_TABLE[RATE_TABLE.length - 1].rates[zoneIndex];
+    function calcShipping(zoneIndex, itemCount) {
+      if (itemCount <= 0) return 0;
+      return BASE_RATE[zoneIndex] + ADDITIONAL_RATE[zoneIndex] * (itemCount - 1);
     }
 
     var shippingCost = 0;
@@ -194,7 +181,7 @@
       actionsDiv.innerHTML = ''
         + '<div style="text-align:left;margin:1.5rem 0;padding:1.5rem;background:#faf7f5;border-radius:12px;">'
         + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.25rem;">Estimate Shipping</p>'
-        + '<p style="font-size:0.85rem;color:#6b6b6b;margin-bottom:0.75rem;">Estimated weight: ' + totalWeight + ' lbs (' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ', includes packaging) &mdash; shipped via UPS Ground from Ellicott City, MD</p>'
+        + '<p style="font-size:0.85rem;color:#6b6b6b;margin-bottom:0.75rem;">' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' &mdash; shipped via UPS Ground from Ellicott City, MD</p>'
         + '<div style="display:flex;gap:0.5rem;align-items:center;">'
         + '<input type="text" id="shipping-zip" placeholder="Enter zip code" maxlength="5" pattern="[0-9]*" inputmode="numeric" value="' + currentZip + '" style="flex:1;padding:0.6rem 1rem;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;" />'
         + '<button class="btn btn-outline" onclick="estimateShipping()" style="white-space:nowrap;">Calculate</button>'
@@ -269,8 +256,8 @@
         return;
       }
       var zoneIndex = getShippingZone(zip);
-      shippingCost = calcShipping(zoneIndex, totalWeight);
-      document.getElementById('shipping-zone-msg').textContent = 'Zone: ' + ZONE_NAMES[zoneIndex] + ' \u2014 ' + totalWeight + ' lbs \u2014 UPS Ground (1\u20135 business days)';
+      shippingCost = calcShipping(zoneIndex, totalItems);
+      document.getElementById('shipping-zone-msg').textContent = 'Zone: ' + ZONE_NAMES[zoneIndex] + ' \u2014 ' + totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' \u2014 UPS Ground (1\u20135 business days)';
       updateTotals();
       enableCheckout();
     };
