@@ -231,7 +231,7 @@
       var zelleDiv = document.createElement('div');
       zelleDiv.style.cssText = 'margin:2rem auto 0;padding:1.5rem 2rem;border-top:1px solid rgba(0,0,0,0.1);text-align:center;max-width:600px;';
       zelleDiv.innerHTML = ''
-        + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;">Or pay with Zelle</p>'
+        + '<p style="font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;">Or pay with Zelle or Venmo</p>'
         + '<p style="font-size:0.9rem;color:#6b6b6b;margin-bottom:0.5rem;">Send your total (including shipping) to one of the following:</p>'
         + '<p style="font-size:0.95rem;color:#1a1a1a;margin:0.75rem 0 0.25rem;">443-204-4402</p>'
         + '<p style="font-size:0.95rem;color:#1a1a1a;margin:0.25rem 0;">nina.malyutina@gmail.com</p>'
@@ -311,7 +311,7 @@
     function enableCheckout() {
       var btn = document.getElementById('checkout-pay-btn');
       btn.disabled = false;
-      btn.textContent = 'Pay with Card / Venmo';
+      btn.textContent = 'Pay with Card';
     }
 
     function disableCheckout() {
@@ -357,7 +357,7 @@
       })
       .finally(function() {
         btn.disabled = false;
-        btn.textContent = 'Pay with Card / Venmo';
+        btn.textContent = 'Pay with Card';
       });
     };
 
