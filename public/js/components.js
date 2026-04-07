@@ -84,7 +84,7 @@
 
   function init() {
     // Google Analytics
-    var gaId = 'G-XXXXXXXXXX';
+    var gaId = 'G-PG2PCW7XFP';
     var gaScript = document.createElement('script');
     gaScript.async = true;
     gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
