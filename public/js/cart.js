@@ -175,7 +175,7 @@
           <span>Subtotal</span>
           <span id="cart-total">$0.00</span>
         </div>
-        <button id="cart-checkout-btn" class="btn btn-primary btn-full" onclick="NHDCart.checkout()">Checkout</button>
+        <button id="cart-checkout-btn" class="btn btn-primary btn-full" onclick="window.location.href='/checkout.html'">Checkout</button>
         <p class="cart-note">Shipping calculated at checkout</p>
       </div>
     `;
