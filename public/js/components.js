@@ -131,6 +131,22 @@
       });
     }
 
+    // Close mobile menu when a nav link is tapped
+    document.querySelectorAll('.nav-links .nav-link').forEach(function (link) {
+      link.addEventListener('click', function () {
+        if (window.innerWidth <= 768 && links) links.classList.remove('open');
+      });
+    });
+
+    // Close mobile menu when tapping outside
+    document.addEventListener('click', function (e) {
+      if (window.innerWidth <= 768 && links && links.classList.contains('open')) {
+        if (!links.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+          links.classList.remove('open');
+        }
+      }
+    });
+
     // Dropdown toggles (mobile)
     document.querySelectorAll('.nav-dropdown-toggle').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
