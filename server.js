@@ -92,7 +92,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Stripe: Create checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
   try {
-    const { items } = req.body;
+    const { items, shipping } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'No items provided' });
@@ -108,6 +108,13 @@ app.post('/api/create-checkout-session', async (req, res) => {
       }
     }
 
+    // Validate shipping cost
+    const shippingCost = typeof shipping === 'number' && shipping >= 0 ? shipping : 0;
+    const VALID_SHIPPING = [0, 12.99, 18.99, 24.99];
+    if (!VALID_SHIPPING.includes(shippingCost)) {
+      return res.status(400).json({ error: 'Invalid shipping rate' });
+    }
+
     const line_items = items.map(item => ({
       price_data: {
         currency: 'usd',
@@ -119,6 +126,18 @@ app.post('/api/create-checkout-session', async (req, res) => {
       },
       quantity: item.quantity,
     }));
+
+    // Add shipping as a line item if > 0
+    if (shippingCost > 0) {
+      line_items.push({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Shipping & Handling (UPS Ground)' },
+          unit_amount: Math.round(shippingCost * 100),
+        },
+        quantity: 1,
+      });
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
