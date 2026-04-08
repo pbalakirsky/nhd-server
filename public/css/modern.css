@@ -311,13 +311,15 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   /* Dropdown sub-menu */
   .nav-dropdown { border-bottom: 1px solid var(--color-blush); }
   .nav-dropdown-menu {
-    all: unset !important;
-    display: none !important;
-    flex-direction: column;
-  }
-  .nav-dropdown.open .nav-dropdown-menu {
-    display: flex !important;
-    flex-direction: column;
+    position: static;
+    box-shadow: none;
+    border-radius: 0;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
   }
   .nav-dropdown-menu a {
     display: block;

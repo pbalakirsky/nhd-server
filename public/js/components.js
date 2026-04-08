@@ -161,10 +161,23 @@
 
     // Dropdown toggles (mobile)
     document.querySelectorAll('.nav-dropdown-toggle').forEach(function (btn) {
+      var menu = btn.nextElementSibling;
+      var chevron = btn.querySelector('svg');
+      // Hide by default on mobile
+      if (menu && window.innerWidth <= 768) {
+        menu.style.display = 'none';
+      }
       btn.addEventListener('click', function (e) {
         if (window.innerWidth <= 768) {
           e.preventDefault();
-          this.closest('.nav-dropdown').classList.toggle('open');
+          e.stopPropagation();
+          if (menu.style.display === 'none') {
+            menu.style.display = 'block';
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+          } else {
+            menu.style.display = 'none';
+            if (chevron) chevron.style.transform = '';
+          }
         }
       });
     });
