@@ -311,20 +311,21 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   /* Dropdown sub-menu */
   .nav-dropdown { border-bottom: 1px solid var(--color-blush); }
   .nav-dropdown-menu {
-    position: static;
-    box-shadow: none;
-    border-radius: 0;
-    min-width: 0;
-    padding: 0;
-    background: transparent;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
+    position: static !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.35s ease;
   }
-  .nav-dropdown.open .nav-dropdown-menu {
+  .nav-dropdown.open .nav-dropdown-menu,
+  .nav-dropdown:hover .nav-dropdown-menu {
     max-height: 500px;
   }
   .nav-dropdown-menu a {
