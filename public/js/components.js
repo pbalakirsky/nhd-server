@@ -128,21 +128,26 @@
     if (toggle && links) {
       toggle.addEventListener('click', function () {
         links.classList.toggle('open');
+        toggle.classList.toggle('open');
       });
     }
 
     // Close mobile menu when a nav link is tapped
     document.querySelectorAll('.nav-links .nav-link').forEach(function (link) {
       link.addEventListener('click', function () {
-        if (window.innerWidth <= 768 && links) links.classList.remove('open');
+        if (window.innerWidth <= 768 && links) {
+          links.classList.remove('open');
+          toggle.classList.remove('open');
+        }
       });
     });
 
-    // Close mobile menu when tapping outside
+    // Close mobile menu when tapping the scrim (::before overlay)
     document.addEventListener('click', function (e) {
       if (window.innerWidth <= 768 && links && links.classList.contains('open')) {
         if (!links.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
           links.classList.remove('open');
+          toggle.classList.remove('open');
         }
       }
     });
