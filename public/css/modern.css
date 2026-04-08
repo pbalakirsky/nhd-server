@@ -1000,6 +1000,14 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
 .back-to-top.visible { opacity: 1; visibility: visible; }
 .back-to-top:hover { background: var(--color-accent); transform: translateY(-2px); }
 
+/* ========== SHOW/HIDE BY DEVICE ========== */
+.mobile-only { display: none; }
+.desktop-only { display: block; }
+@media (max-width: 768px) {
+  .mobile-only { display: block; }
+  .desktop-only { display: none !important; }
+}
+
 /* ========== UTILITY ========== */
 .sr-only {
   position: absolute;

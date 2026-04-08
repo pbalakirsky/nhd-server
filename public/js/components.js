@@ -2,14 +2,34 @@
 (function () {
   'use strict';
 
-  // Desktop nav — uses hover dropdown
-  const NAV_DESKTOP_LINKS = `
-        <div class="nav-dropdown">
+  const NAV_HTML = `
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="nav-brand">Nina's Homemade Delights</a>
+      <div class="nav-links" id="nav-links">
+        <!-- Desktop: hover dropdown (hidden on mobile via CSS) -->
+        <div class="nav-dropdown desktop-only">
           <button class="nav-dropdown-toggle" aria-expanded="false">
             Shop
             <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </button>
           <div class="nav-dropdown-menu">
+            <a href="/category/all-products.html">All Products</a>
+            <a href="/category/featured.html">Featured</a>
+            <a href="/category/cakes.html">Cakes</a>
+            <a href="/category/cakesters.html">Cakesters</a>
+            <a href="/category/treats.html">Treats</a>
+            <a href="/category/cookies.html">Cookies</a>
+            <a href="/category/bundle.html">Bundle</a>
+          </div>
+        </div>
+        <!-- Mobile: tap dropdown (hidden on desktop via CSS) -->
+        <div class="mobile-only">
+          <button class="mobile-shop-toggle" id="mobile-shop-toggle">
+            Shop
+            <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <div class="m-shop-dd" id="m-shop-dd" style="display:none;">
             <a href="/category/all-products.html">All Products</a>
             <a href="/category/featured.html">Featured</a>
             <a href="/category/cakes.html">Cakes</a>
@@ -26,47 +46,13 @@
         <button class="nav-cart" onclick="NHDCart.open()" aria-label="Open cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
           <span class="cart-count" style="display:none">0</span>
-        </button>`;
-
-  // Mobile nav — uses a fresh element class (m-shop-dd) with no desktop CSS
-  const NAV_MOBILE_LINKS = `
-        <button class="mobile-shop-toggle" id="mobile-shop-toggle">
-          Shop
-          <svg viewBox="0 0 12 12" style="width:14px;height:14px;margin-left:auto;transition:transform 0.3s ease;"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
-        <div class="m-shop-dd" id="m-shop-dd" style="display:none;">
-          <a href="/category/all-products.html">All Products</a>
-          <a href="/category/featured.html">Featured</a>
-          <a href="/category/cakes.html">Cakes</a>
-          <a href="/category/cakesters.html">Cakesters</a>
-          <a href="/category/treats.html">Treats</a>
-          <a href="/category/cookies.html">Cookies</a>
-          <a href="/category/bundle.html">Bundle</a>
-        </div>
-        <a href="/about.html" class="nav-link">Our Story</a>
-        <a href="/order-delivery-pickup.html" class="nav-link">Order &amp; Delivery</a>
-        <a href="/contact.html" class="nav-link">Contact</a>
-        <a href="/refund.html" class="nav-link">Returns</a>
-        <button class="nav-cart" onclick="NHDCart.open()" aria-label="Open cart">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-          <span class="cart-count" style="display:none">0</span>
-        </button>`;
-
-  function getNavHTML() {
-    var isMobile = window.innerWidth <= 768;
-    return `
-  <nav class="navbar">
-    <div class="container">
-      <a href="/" class="nav-brand">Nina's Homemade Delights</a>
-      <div class="nav-links" id="nav-links">
-        ${isMobile ? NAV_MOBILE_LINKS : NAV_DESKTOP_LINKS}
       </div>
       <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>`;
-  }
 
   const FOOTER_HTML = `
   <footer class="footer">
@@ -127,7 +113,7 @@
     document.head.appendChild(gaConfig);
 
     // Inject nav at top of body
-    document.body.insertAdjacentHTML('afterbegin', getNavHTML());
+    document.body.insertAdjacentHTML('afterbegin', NAV_HTML);
 
     // Inject footer before end of body (before scripts)
     const scripts = document.body.querySelectorAll('script');
