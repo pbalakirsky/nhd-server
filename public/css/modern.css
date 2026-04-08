@@ -254,6 +254,7 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
 .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 @media (max-width: 768px) {
+  .navbar { background: #ffffff !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
   .nav-toggle { display: flex; }
 
   /* Full-screen slide-in drawer */
@@ -1029,7 +1030,6 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   .trust-strip { gap: 1.5rem; padding: 1.5rem 1rem; }
 }
 @media (max-width: 767px) {
-  .navbar { background: #ffffff; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .container { padding: 0 1.25rem; }
   .hero { padding: 4rem 0 2.5rem; }
   .hero p { font-size: 1.05rem; margin-bottom: 2rem; }
