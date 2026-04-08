@@ -25,11 +25,11 @@
         </div>
         <!-- Mobile: tap dropdown (hidden on desktop via CSS) -->
         <div class="mobile-only">
-          <button class="mobile-shop-toggle" id="mobile-shop-toggle">
+          <button class="mobile-shop-toggle" onclick="window.toggleShopDD(this)">
             Shop
             <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </button>
-          <div class="m-shop-dd" id="m-shop-dd" style="display:none;">
+          <div id="m-shop-dd" class="m-shop-dd" style="display:none;">
             <a href="/category/all-products.html">All Products</a>
             <a href="/category/featured.html">Featured</a>
             <a href="/category/cakes.html">Cakes</a>
@@ -176,21 +176,19 @@
     // Close on scrim tap
     navScrim.addEventListener('click', closeMenu);
 
-    // Mobile shop dropdown toggle
-    var mShopBtn = document.getElementById('mobile-shop-toggle');
-    var mShopDd = document.getElementById('m-shop-dd');
-    if (mShopBtn && mShopDd) {
-      mShopBtn.addEventListener('click', function () {
-        var svg = this.querySelector('svg');
-        if (mShopDd.style.display === 'none') {
-          mShopDd.style.display = 'block';
-          if (svg) svg.style.transform = 'rotate(180deg)';
-        } else {
-          mShopDd.style.display = 'none';
-          if (svg) svg.style.transform = '';
-        }
-      });
-    }
+    // Mobile shop dropdown — global function called via onclick in HTML
+    window.toggleShopDD = function (btn) {
+      var dd = document.getElementById('m-shop-dd');
+      if (!dd) return;
+      var svg = btn.querySelector('svg');
+      if (dd.style.display === 'none') {
+        dd.style.display = 'block';
+        if (svg) svg.style.transform = 'rotate(180deg)';
+      } else {
+        dd.style.display = 'none';
+        if (svg) svg.style.transform = '';
+      }
+    };
 
     // Desktop dropdown toggle
     document.querySelectorAll('.nav-dropdown-toggle').forEach(function (btn) {
