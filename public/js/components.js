@@ -28,16 +28,21 @@
           <span class="cart-count" style="display:none">0</span>
         </button>`;
 
-  // Mobile nav — flat list, no dropdown mechanics
+  // Mobile nav — uses a fresh element class (m-shop-dd) with no desktop CSS
   const NAV_MOBILE_LINKS = `
-        <span class="mobile-nav-label">Shop</span>
-        <a href="/category/all-products.html" class="mobile-nav-sub">All Products</a>
-        <a href="/category/featured.html" class="mobile-nav-sub">Featured</a>
-        <a href="/category/cakes.html" class="mobile-nav-sub">Cakes</a>
-        <a href="/category/cakesters.html" class="mobile-nav-sub">Cakesters</a>
-        <a href="/category/treats.html" class="mobile-nav-sub">Treats</a>
-        <a href="/category/cookies.html" class="mobile-nav-sub">Cookies</a>
-        <a href="/category/bundle.html" class="mobile-nav-sub">Bundle</a>
+        <button class="mobile-shop-toggle" id="mobile-shop-toggle">
+          Shop
+          <svg viewBox="0 0 12 12" style="width:14px;height:14px;margin-left:auto;transition:transform 0.3s ease;"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="m-shop-dd" id="m-shop-dd" style="display:none;">
+          <a href="/category/all-products.html">All Products</a>
+          <a href="/category/featured.html">Featured</a>
+          <a href="/category/cakes.html">Cakes</a>
+          <a href="/category/cakesters.html">Cakesters</a>
+          <a href="/category/treats.html">Treats</a>
+          <a href="/category/cookies.html">Cookies</a>
+          <a href="/category/bundle.html">Bundle</a>
+        </div>
         <a href="/about.html" class="nav-link">Our Story</a>
         <a href="/order-delivery-pickup.html" class="nav-link">Order &amp; Delivery</a>
         <a href="/contact.html" class="nav-link">Contact</a>
@@ -185,7 +190,23 @@
     // Close on scrim tap
     navScrim.addEventListener('click', closeMenu);
 
-    // Desktop dropdown toggle (for click-based opening on desktop if needed)
+    // Mobile shop dropdown toggle
+    var mShopBtn = document.getElementById('mobile-shop-toggle');
+    var mShopDd = document.getElementById('m-shop-dd');
+    if (mShopBtn && mShopDd) {
+      mShopBtn.addEventListener('click', function () {
+        var svg = this.querySelector('svg');
+        if (mShopDd.style.display === 'none') {
+          mShopDd.style.display = 'block';
+          if (svg) svg.style.transform = 'rotate(180deg)';
+        } else {
+          mShopDd.style.display = 'none';
+          if (svg) svg.style.transform = '';
+        }
+      });
+    }
+
+    // Desktop dropdown toggle
     document.querySelectorAll('.nav-dropdown-toggle').forEach(function (btn) {
       btn.addEventListener('click', function () {
         this.closest('.nav-dropdown').classList.toggle('open');

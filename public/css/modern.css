@@ -308,26 +308,37 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   }
   .nav-dropdown.open .nav-dropdown-toggle svg { transform: rotate(180deg); }
 
-  /* Mobile-only nav elements */
-  .mobile-nav-label {
-    display: block;
-    padding: 0.9rem 0 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-  }
-  .mobile-nav-sub {
-    display: block;
-    padding: 0.6rem 0 0.6rem 1rem;
+  /* Mobile shop dropdown — fresh classes, zero desktop CSS */
+  .mobile-shop-toggle {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.9rem 0;
     font-size: 0.95rem;
     font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-rose);
+    border: none;
+    border-bottom: 1px solid var(--color-blush);
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-shop-toggle:hover { color: var(--color-accent); }
+  .m-shop-dd {
+    padding: 0;
+  }
+  .m-shop-dd a {
+    display: block;
+    padding: 0.6rem 0 0.6rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
     color: var(--color-rose);
     border-bottom: 1px solid var(--color-blush);
-    transition: color 0.2s ease;
+    text-decoration: none;
   }
-  .mobile-nav-sub:hover { color: var(--color-accent); }
+  .m-shop-dd a:hover { color: var(--color-accent); }
 
   /* Cart button in mobile nav */
   .nav-cart {
