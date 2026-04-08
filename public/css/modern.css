@@ -308,33 +308,8 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   }
   .nav-dropdown.open .nav-dropdown-toggle svg { transform: rotate(180deg); }
 
-  /* Dropdown sub-menu */
+  /* Dropdown — all styling handled by JS inline styles on mobile */
   .nav-dropdown { border-bottom: 1px solid var(--color-blush); }
-  .nav-dropdown-menu {
-    position: static;
-    box-shadow: none;
-    border-radius: 0;
-    min-width: 0;
-    padding: 0;
-    background: transparent;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-  }
-  .nav-dropdown-menu a {
-    display: block;
-    padding: 0.65rem 0 0.65rem 1.25rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--color-rose);
-    border: none;
-    letter-spacing: 0.02em;
-    text-transform: none;
-  }
-  .nav-dropdown-menu a:hover {
-    color: var(--color-accent);
-    background: transparent;
-  }
 
   /* Cart button in mobile nav */
   .nav-cart {

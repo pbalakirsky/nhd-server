@@ -160,23 +160,44 @@
     navScrim.addEventListener('click', closeMenu);
 
     // Dropdown toggles (mobile)
+    // Use inline cssText to blast away ALL desktop CSS — no specificity fights
+    var MOBILE_MENU_HIDDEN = 'display:none !important;';
+    var MOBILE_MENU_VISIBLE = 'display:block !important; position:static !important; opacity:1 !important; visibility:visible !important; transform:none !important; box-shadow:none !important; background:transparent !important; padding:0 !important; min-width:0 !important; border-radius:0 !important; transition:none !important; z-index:auto !important;';
+    var MOBILE_LINK_STYLE = 'display:block; padding:0.65rem 0 0.65rem 1.25rem; font-size:0.9rem; font-weight:500; color:#c9a090; letter-spacing:0.02em; text-transform:none; text-decoration:none;';
+
     document.querySelectorAll('.nav-dropdown-toggle').forEach(function (btn) {
       var menu = btn.nextElementSibling;
       var chevron = btn.querySelector('svg');
-      // Hide by default on mobile
-      if (menu && window.innerWidth <= 768) {
-        menu.style.display = 'none';
+      var menuOpen = false;
+
+      function applyMobileStyles() {
+        if (window.innerWidth <= 768 && menu) {
+          // Style the sub-links
+          var subLinks = menu.querySelectorAll('a');
+          subLinks.forEach(function (a) { a.style.cssText = MOBILE_LINK_STYLE; });
+          // Hide menu
+          menu.style.cssText = MOBILE_MENU_HIDDEN;
+          menuOpen = false;
+        }
       }
+
+      // Apply on load
+      applyMobileStyles();
+      // Re-apply on resize
+      window.addEventListener('resize', applyMobileStyles);
+
       btn.addEventListener('click', function (e) {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 768 && menu) {
           e.preventDefault();
           e.stopPropagation();
-          if (menu.style.display === 'none') {
-            menu.style.display = 'block';
-            if (chevron) chevron.style.transform = 'rotate(180deg)';
-          } else {
-            menu.style.display = 'none';
+          if (menuOpen) {
+            menu.style.cssText = MOBILE_MENU_HIDDEN;
+            menuOpen = false;
             if (chevron) chevron.style.transform = '';
+          } else {
+            menu.style.cssText = MOBILE_MENU_VISIBLE;
+            menuOpen = true;
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
           }
         }
       });
