@@ -301,7 +301,7 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--color-muted) !important;
+    color: var(--color-rose) !important;
     border-bottom: 1px solid var(--color-blush);
   }
   .nav-link:last-of-type { border-bottom: 1px solid var(--color-blush); }
@@ -340,7 +340,7 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
     padding: 0.65rem 0 0.65rem 1.25rem;
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--color-muted);
+    color: var(--color-rose);
     border: none;
     letter-spacing: 0.02em;
     text-transform: none;
