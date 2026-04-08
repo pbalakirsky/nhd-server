@@ -265,7 +265,10 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
     width: 80vw;
     max-width: 320px;
     height: 100%;
-    background: var(--color-cream);
+    background: #faf7f4 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    isolation: isolate;
     flex-direction: column;
     align-items: stretch;
     padding: 5rem 1.5rem 2rem;
@@ -278,18 +281,6 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   }
   .nav-links.open { transform: translateX(0); }
 
-  /* Scrim / overlay behind drawer */
-  .nav-links::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    opacity: 0;
-    transition: opacity 0.35s ease;
-    pointer-events: none;
-    z-index: -1;
-  }
-  .nav-links.open::before { opacity: 1; }
 
   /* Shared style for all top-level nav items */
   .nav-link,
@@ -359,6 +350,18 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
 
   /* Keep hamburger above the drawer */
   .nav-toggle { z-index: 102; }
+
+  /* Scrim overlay — separate element behind drawer */
+  .nav-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease;
+  }
+  .nav-scrim.open { opacity: 1; visibility: visible; }
 }
 
 /* ========== HERO ========== */

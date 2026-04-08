@@ -125,32 +125,39 @@
     // Mobile menu toggle
     const toggle = document.getElementById('nav-toggle');
     const links = document.getElementById('nav-links');
+
+    // Create scrim overlay as a sibling (outside the drawer)
+    var navScrim = document.createElement('div');
+    navScrim.className = 'nav-scrim';
+    document.body.appendChild(navScrim);
+
+    function closeMenu() {
+      links.classList.remove('open');
+      toggle.classList.remove('open');
+      navScrim.classList.remove('open');
+    }
+    function openMenu() {
+      links.classList.add('open');
+      toggle.classList.add('open');
+      navScrim.classList.add('open');
+    }
+
     if (toggle && links) {
       toggle.addEventListener('click', function () {
-        links.classList.toggle('open');
-        toggle.classList.toggle('open');
+        if (links.classList.contains('open')) { closeMenu(); }
+        else { openMenu(); }
       });
     }
 
     // Close mobile menu when a nav link is tapped
     document.querySelectorAll('.nav-links .nav-link').forEach(function (link) {
       link.addEventListener('click', function () {
-        if (window.innerWidth <= 768 && links) {
-          links.classList.remove('open');
-          toggle.classList.remove('open');
-        }
+        if (window.innerWidth <= 768) closeMenu();
       });
     });
 
-    // Close mobile menu when tapping the scrim (::before overlay)
-    document.addEventListener('click', function (e) {
-      if (window.innerWidth <= 768 && links && links.classList.contains('open')) {
-        if (!links.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
-          links.classList.remove('open');
-          toggle.classList.remove('open');
-        }
-      }
-    });
+    // Close on scrim tap
+    navScrim.addEventListener('click', closeMenu);
 
     // Dropdown toggles (mobile)
     document.querySelectorAll('.nav-dropdown-toggle').forEach(function (btn) {
