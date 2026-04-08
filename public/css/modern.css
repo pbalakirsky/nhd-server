@@ -308,12 +308,16 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
   }
   .nav-dropdown.open .nav-dropdown-toggle svg { transform: rotate(180deg); }
 
+  /* Mobile-only wrapper — invisible, just a structural container */
+  .mobile-only { border: none; padding: 0; margin: 0; }
+
   /* Mobile shop dropdown — fresh classes, zero desktop CSS */
   .mobile-shop-toggle {
     display: flex;
     align-items: center;
     width: 100%;
     padding: 0.9rem 0;
+    font-family: inherit;
     font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -324,6 +328,13 @@ p { line-height: 1.75; color: var(--color-muted); font-size: 1.05rem; }
     background: none;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-shop-toggle svg {
+    width: 14px;
+    height: 14px;
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
   }
   .mobile-shop-toggle:hover { color: var(--color-accent); }
   .m-shop-dd {
