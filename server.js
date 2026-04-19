@@ -53,6 +53,22 @@ app.use(helmet({
   },
 }));
 
+// Preview bundle uses blob: URLs for its embedded assets; relax CSP
+// for that one page only. Main site CSP above is unchanged.
+app.use('/preview.html', (req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self' blob: data:; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://js.stripe.com; " +
+    "style-src 'self' 'unsafe-inline' blob:; " +
+    "img-src 'self' blob: data: https:; " +
+    "font-src 'self' blob: data:; " +
+    "connect-src 'self' blob: https:; " +
+    "frame-src 'self' https://js.stripe.com;"
+  );
+  next();
+});
+
 // Stripe webhook needs raw body — must come BEFORE express.json()
 app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
