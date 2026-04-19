@@ -227,11 +227,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Free at $180+ subtotal. Origin: Ellicott City, MD 21042.
 const NHD_SHIP_MULT = {
   'pirates-dream': 1.0, 'lemon-cake': 1.0, 'just-peachy': 1.0,
-  'chocolate-surrender': 1.0, 'red-velvet-cake': 1.0, 'creme-de-la-creme': 1.0,
+  'chocolate-surrender': 1.0, 'red-velvet-cake': 1.0,
   'cakesters': 0.75, 'cakester-singles': 0.75,
   'one-tough-cookie': 0.45, 'cookie-royale': 0.45, 'day-night': 0.45, 'honey-crunch': 0.45,
   'apple-confiture': 0.35,
-  'heavens-best': 0, 'have-your-cake-and-eat-it': 0,  // pickup-only
+  'heavens-best': 0, 'have-your-cake-and-eat-it': 0, 'creme-de-la-creme': 0,  // pickup-only
 };
 function nhdRegionFor(zip) {
   const prefix = parseInt(String(zip).slice(0, 3), 10);
