@@ -220,6 +220,53 @@ app.post('/api/refund', contactLimiter, upload.array('photos', 5), async (req, r
 // Serve static site files
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// Shipping quote: regional base rate × per-item multiplier × qty.
+// Free at $85+ subtotal. Origin: Ellicott City, MD 21042.
+const NHD_SHIP_MULT = {
+  'pirates-dream': 1.0, 'lemon-cake': 1.0, 'just-peachy': 1.0,
+  'chocolate-surrender': 1.0, 'red-velvet-cake': 1.0, 'creme-de-la-creme': 1.0,
+  'cakesters': 0.75, 'cakester-singles': 0.75,
+  'one-tough-cookie': 0.45, 'cookie-royale': 0.45, 'day-night': 0.45, 'honey-crunch': 0.45,
+  'apple-confiture': 0.35,
+  'heavens-best': 0, 'have-your-cake-and-eat-it': 0,  // pickup-only
+};
+function nhdRegionFor(zip) {
+  const prefix = parseInt(String(zip).slice(0, 3), 10);
+  if (!Number.isFinite(prefix)) return null;
+  if (prefix >= 206 && prefix <= 219) return { name: 'local', base: 15.50 };
+  if (prefix >= 150 && prefix <= 268) return { name: 'regional', base: 16.00 };
+  return { name: 'national', base: 35.00 };
+}
+app.post('/api/shipping-quote', (req, res) => {
+  try {
+    const { zip, items, subtotal } = req.body || {};
+    if (!zip || !/^\d{5}$/.test(String(zip))) {
+      return res.status(400).json({ error: 'Valid 5-digit ZIP required' });
+    }
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'No items' });
+    }
+    const region = nhdRegionFor(zip);
+    if (!region) return res.status(400).json({ error: 'Unsupported ZIP' });
+    if (typeof subtotal === 'number' && subtotal >= 85) {
+      return res.json({ cost: 0, region: region.name, free: true });
+    }
+    const totalMult = items.reduce((s, i) => {
+      const mult = Object.prototype.hasOwnProperty.call(NHD_SHIP_MULT, i.slug) ? NHD_SHIP_MULT[i.slug] : 1;
+      return s + (Number(i.qty) || 1) * mult;
+    }, 0);
+    if (totalMult === 0) {
+      return res.json({ cost: 0, region: region.name, free: false, pickupOnly: true });
+    }
+    const cost = Math.round(region.base * totalMult * 100) / 100;
+    res.json({ cost, region: region.name, free: false });
+  } catch (err) {
+    console.error('Shipping quote error:', err.message);
+    res.status(500).json({ error: 'Failed to calculate shipping' });
+  }
+});
+
 // Stripe: Create checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
   try {
