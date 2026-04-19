@@ -224,7 +224,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Shipping quote: regional base rate × per-item multiplier × qty.
-// Free at $85+ subtotal. Origin: Ellicott City, MD 21042.
+// Free at $180+ subtotal. Origin: Ellicott City, MD 21042.
 const NHD_SHIP_MULT = {
   'pirates-dream': 1.0, 'lemon-cake': 1.0, 'just-peachy': 1.0,
   'chocolate-surrender': 1.0, 'red-velvet-cake': 1.0, 'creme-de-la-creme': 1.0,
@@ -251,7 +251,7 @@ app.post('/api/shipping-quote', (req, res) => {
     }
     const region = nhdRegionFor(zip);
     if (!region) return res.status(400).json({ error: 'Unsupported ZIP' });
-    if (typeof subtotal === 'number' && subtotal >= 85) {
+    if (typeof subtotal === 'number' && subtotal >= 180) {
       return res.json({ cost: 0, region: region.name, free: true });
     }
     const totalMult = items.reduce((s, i) => {
