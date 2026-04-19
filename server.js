@@ -53,19 +53,21 @@ app.use(helmet({
   },
 }));
 
-// Preview bundle uses blob: URLs for its embedded assets; relax CSP
-// for that one page only. Main site CSP above is unchanged.
-app.use('/preview.html', (req, res, next) => {
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self' blob: data:; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://js.stripe.com; " +
-    "style-src 'self' 'unsafe-inline' blob:; " +
-    "img-src 'self' blob: data: https:; " +
-    "font-src 'self' blob: data:; " +
-    "connect-src 'self' blob: https:; " +
-    "frame-src 'self' https://js.stripe.com;"
-  );
+// Bundle index.html uses blob: URLs for its embedded assets; relax CSP
+// for the root page only. Other paths keep the strict CSP above.
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path === '/index.html') {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self' blob: data:; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://js.stripe.com; " +
+      "style-src 'self' 'unsafe-inline' blob:; " +
+      "img-src 'self' blob: data: https:; " +
+      "font-src 'self' blob: data:; " +
+      "connect-src 'self' blob: https:; " +
+      "frame-src 'self' https://js.stripe.com;"
+    );
+  }
   next();
 });
 
